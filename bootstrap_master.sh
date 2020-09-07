@@ -292,6 +292,7 @@ wait $!
         # Verifying the cluster Get Nodes status kubectl get nodes Get component status
 /usr/bin/kubectl get cs
         ###################################################################################################
+	#		CREATE PRIVATE SECRET FOR PRIVATE IMAGE REGISTRY AND ASSIGN TO NAME SPACES
         ###################################################################################################
         # Add Gitlab Repository secrects Create environment variables for each object flag
         # using export <Environment variable Name>="<value>" Setup 2.1. Authenticate Private
@@ -301,10 +302,15 @@ wait $!
         #     --docker-server="https://registry.gitlab.com/clayton-state-university/" \
         # --docker-username=${USERNAME} \ --docker-password=${PASSWORD} \
         # --docker-email=${EMAIL} \ -o yaml --dry-run 
-		# cat <<EOF | kubectl create -f -
+	# cat <<EOF | kubectl create -f -
         # apiVersion: v1 data:
         #   .dockerconfigjson: kind: Secret metadata: creationTimestamp: null name: gitlab
-        # type: kubernetes.io/dockerconfigjson EOF
+        # type: kubernetes.io/dockerconfigjson 
+	# EOF
+	###################  	TRANSFER SECRETS TO ANOTHER NAMESPACE	  ################################
+	# Once created you can transfer secrets to any name space by using this command:
+	# kubectl get secret <REGISTRY NAME> --namespace=<DEFAULT NAMESPACE> --export -o yaml |\
+   	# kubectl apply --namespace=<THE OTHER NAMESPACE NAME YOU WANT TO TRANSFER TO> -f -
         ###################################################################################################
         # Copy and paste the output into a seperate file gitlab-secret.yaml. Then use the
         # following command to create the secret. kubectl create -f gitlab-secret.yaml
