@@ -24,11 +24,11 @@ fi
 function kube_binary(){
     # Require sudo to run script
 if [[ -z ${KUBEADM} ]]; then
-    printf "\nUnable to locate ${RED}kubeadm${NC} binary. \nPlease re-run this script using the ${RED}--setup${NC} flag.\n Usage:${RED} $0 [ --reset | --setup ]${NC}\n";
+    printf "\nUnable to locate ${RED}kubeadm${NC} binary. \nPlease re-run this script using the ${RED}setup${NC} flag.\n Usage:${RED} $0 [ reset | setup ]${NC}\n";
     printf "\n${RED}sudo $0 $*${NC}";
     exit 1
 elif [[ -z ${KUBECTL} ]]; then
-        printf "\nUnable to locate ${RED}kubelet${NC} binary. \nPlease re-run this script using the ${RED}--setup${NC} flag.\n Usage:${RED} $0 [ --reset | --setup ]${NC}\n";
+        printf "\nUnable to locate ${RED}kubelet${NC} binary. \nPlease re-run this script using the ${RED}setup${NC} flag.\n Usage:${RED} $0 [ reset | setup ]${NC}\n";
     printf "\n$RED}sudo $0 $*${NC}";
     exit 1
 fi
