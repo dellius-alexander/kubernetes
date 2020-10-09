@@ -13,7 +13,7 @@ NC='\033[0m' # No Color CAP
     # Require sudo to run script
 if [[ $UID != 0 ]]; then
     printf "\nPlease run this script with sudo: \n";
-    printf "\n${RED} sudo $0 $* ${NC}\n\n";
+    printf "\n${RED} sudo $0 $* ${NC}\n";
     exit 1
 fi
 ###############################################################################
@@ -24,12 +24,12 @@ fi
 function kube_binary(){
     # Require sudo to run script
 if [[ -z ${KUBEADM} ]]; then
-    printf "\nUnable to locate ${RED}kubeadm${NC} binary. \nPlease re-run this script using the ${RED}--setup${NC} flag.\n Usage:${RED} $0 [ --reset | --setup ]${NC}\n";
-    printf "\n${RED}sudo $0 $*${NC}";
+    printf "\nUnable to locate ${RED}kubeadm${NC} binary. \nPlease re-run this script using the ${RED}--setup${NC} flag.\n Usage:${RED} $0 [ --reset | --setup ]${NC}\n"
+    echo "sudo $0 $*"
     exit 1
 elif [[ -z ${KUBECTL} ]]; then
-        printf "\nUnable to locate ${RED}kubelet${NC} binary. \nPlease re-run this script using the ${RED}--setup${NC} flag.\n Usage:${RED} $0 [ --reset | --setup ]${NC}\n";
-    printf "\n$RED}sudo $0 $*${NC}";
+        printf "\nUnable to locate ${RED}kubelet${NC} binary. \nPlease re-run this script using the ${RED}--setup${NC} flag.\n Usage:${RED} $0 [ --reset | --setup ]${NC}\n"
+    echo "sudo $0 $*"
     exit 1
 fi
 }
@@ -44,11 +44,11 @@ function firewall_rules(){
     # Disable Firewall
 # systemctl disable firewalld && systemctl stop firewalld
     # Posts to be defined on the worker nodes
-    # All       kube-apiserver host     Incoming        Often TCP 443 or 6443*
+    # All	kube-apiserver host	Incoming	Often TCP 443 or 6443*
 firewall-cmd --zone=public --add-port=6443/tcp --permanent
 firewall-cmd --zone=public --add-port=443/tcp --permanent
     # Used by: kube-apiserver, etcd
-    # etcd datastore    etcd hosts      Incoming        Officially TCP 2379 but can vary
+    # etcd datastore	etcd hosts	Incoming	Officially TCP 2379 but can vary
 firewall-cmd --zone=public --add-port=2379-2380/tcp --permanent
     # Used by: self, Control plane
 firewall-cmd --zone=public --add-port=10250/tcp --permanent
@@ -56,13 +56,13 @@ firewall-cmd --zone=public --add-port=10250/tcp --permanent
 firewall-cmd --zone=public --add-port=10251/tcp --permanent
     # Used by: self
 firewall-cmd --zone=public --add-port=10252/tcp --permanent
-    # Calico networking (BGP)   All     Bidirectional   TCP 179
+    # Calico networking (BGP)	All	Bidirectional	TCP 179
 firewall-cmd --zone=public --add-port=179/tcp --permanent
-    # Calico networking with IP-in-IP enabled (default) All     Bidirectional   IP-in-IP, 4
+    # Calico networking with IP-in-IP enabled (default)	All	Bidirectional	IP-in-IP, 4
 firewall-cmd --zone=public --add-port=4/tcp --permanent
-    # Calico networking with VXLAN enabled      All     Bidirectional   UDP 4789
+    # Calico networking with VXLAN enabled	All	Bidirectional	UDP 4789
 firewall-cmd --zone=public --add-port=4789/tcp --permanent
-    # Calico networking with Typha enabled      Typha agent hosts       Incoming        TCP 5473 (default)
+    # Calico networking with Typha enabled	Typha agent hosts	Incoming	TCP 5473 (default)
 firewall-cmd --zone=public --add-port=5473/tcp --permanent
     # Reload firewall
 firewall-cmd --reload
@@ -75,14 +75,14 @@ wait $!
 }
 ###############################################################################
 ###############################################################################
-#               INITIAL SETUP OF CLUSTER NODE
+#               INITIAL SETUP OF CLUSTER
 ###############################################################################
 function setup() {
 get_env k8s.env.example
 ###############################################################################
     # Reset IP tables
 iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
-    # Pre-requisites Update /etc/hosts So that we can talk to each of the
+    # Pre-requisites Update /etc/hosts So that we can talk to each of the 
     # nodes in the cluster
 cat >/etc/hosts<<EOF
 127.0.0.1 localhost
@@ -91,7 +91,7 @@ ${MASTER_NODE} k8s-master.example.com k8s-master
 ${WORKER_NODE_1} k8s-worker-node-1.example.com k8s-worker-node-1
 ${WORKER_NODE_2} k8s-worker-node-2.example.com k8s-worker-node-2
 EOF
-
+    
     # Setup firewall rules
     # Posts to be defined on the worker nodes
     # Run firewall function:
@@ -174,22 +174,21 @@ wait $!
 
     # On kmaster
     # Initialize Kubernetes Cluster
-echo & ${KUBEADM} init --apiserver-advertise-address=${APISERVER_ADVERTISE_ADDRESS} \
+echo && ${KUBECTL} init --apiserver-advertise-address=${APISERVER_ADVERTISE_ADDRESS} \
 --pod-network-cidr=${__POD_NETWORK_CIDR_}
 
     # Setup KUBECONFIG file:
 mkdir -p ${__KUBECONFIG_DIRECTORY__}/.kube
 cp -i /etc/kubernetes/admin.conf  ${__KUBECONFIG_DIRECTORY__}/config
-chown ${K8S_USER}:${K8S_USER}  ${__KUBECONFIG_DIRECTORY__}/config
+chown ${K8S_USER}:${K8S_USER} ${USER_HOME}/${__KUBECONFIG_DIRECTORY__}/config
 wait $!
 
     # Deploy Calico network
     # Source: https://docs.projectcalico.org/v3.14/manifests/calico.yaml
-    # Modify the config map as needed:
-echo & ${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__} create -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
+    # Modify the config map as needed: 
+echo && ${KUBECTL} --kubeconfig=${KUBECONFIG} create -f ${__CALICO_YAML_DIRECTORY__}/calico.yaml
     # Cluster join command
-echo & ${KUBEADM} token create --print-join-command
-exit 0
+echo && ${KUBEADM} token create --print-join-command
 }   # END OF SETUP
 ###############################################################################
 ###############################################################################
@@ -227,15 +226,15 @@ rm -rf \
 /var/run/kubernetes \
 /var/lib/cni \
 /etc/cni/net.d \
-${__KUBECONFIG_DIRECTORY__}/config
+~/.kube/config
 wait $!
 
 
     # Restart the kubelet
 systemctl daemon-reload &&
-systemctl enable --now kubelet &&
+systemctl enable --now kubelet && 
 systemctl restart kubelet &&
-systemctl enable docker &&
+systemctl enable docker && 
 systemctl restart docker
 wait $!
 
@@ -252,11 +251,10 @@ wait $!
 
     # Deploy Calico network
     # Source: https://docs.projectcalico.org/v3.14/manifests/calico.yaml
-    # Modify the config map as needed:
-echo & ${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  create -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
+    # Modify the config map as needed: 
+echo & ${KUBECTL} --kubeconfig=/etc/kubernetes/admin.conf create -f ${__CALICO_YAML_DIRECTORY__}/calico.yaml
     # Cluster join command
 echo & ${KUBEADM} token create --print-join-command
-exit 0
 }   # END OF RESET
 ###############################################################################
 ###############################################################################
@@ -280,51 +278,31 @@ echo "Kubernetes config file PATH: ${KUBECONFIG}"
 echo "Kubernetes Service Port: ${__KUBERNETES_SERVICE_PORT__}"
 echo "Calico file directory: ${__CALICO_YAML_DIRECTORY__}"
 echo "Kubeconfig directory: ${__KUBECONFIG_DIRECTORY__}"
-echo "Kubeconfig file path: ${__KUBECONFIG_FILEPATH__}"
+
 }
 ###############################################################################
 ###############################################################################
-###############################################################################
-function check_env() {
-###############################################################################
-        ## Check envirnoment variable
-if [[ -z "$1" ]]; then
-        printf "\n$2 NULL\n" 1>/dev/null 2>/dev/null
-        return ""
-else
-        printf "\n$2 $1\n" 1>/dev/null 2>/dev/null
-        echo "$1"
-fi
-}
-###############################################################################
-###############################################################################
-#                  TEST THE INPUT PARAMETERS
 ###############################################################################
 function test_input() {
 ###############################################################################
     ## Exit if no paramaters provided
 i=0
 in="$1"
-while [[ "${in}" != "reset" && "${in}" != "setup" && -z "${in}" ]];
+while [[ "$in" != "--reset" && "$in" != "--setup" && -z "${in}" ]];
 do
-        printf "\nInitial Usage:${RED} $0 [ reset | setup ]${NC}\n";
-        printf "\nEnter a task parameter => ${RED} $0 [ reset | setup ]${NC} to reset or setup master node: ";
-        in=$(read v && echo ${v})
-        sleep 1
-        ((i++))
-        if [[ "${i}" == 3 ]]; then
-                exit 1
-        fi
+        printf "\nInitial Usage:${RED} $0 [ --reset | --setup ]${NC}\n";
+        printf "\nEnter a task parameter => ${RED} $0 [ --reset | --setup ]${NC} to reset or setup master node: ";
+in=$(read v && echo ${v})
+sleep 0.5
 done
-
     ## Check the input command
 in=$(check_env "${in}" "You entered: ")
     ## Check if command is valid
-if [ "${in}" == "reset" ]; then
+if [ "${in}" == "--reset" ]; then
         reset
-elif [ "${in}" == "setup" ]; then
+elif [ "${in}" == "--setup" ]; then
         setup
-elif [ "${in}" == "test" ]; then
+elif [ "${in}" == "--test" ]; then
         printf "\nTest was successful...\n";
         declare -x JOIN_TOKEN=$(read -p 'Please enter kubeadm join token: ' v && echo $v)
         declare -x JOIN_TOKEN=$(check_env "${JOIN_TOKEN}" "You entered: ")
@@ -333,17 +311,15 @@ elif [ "${in}" == "test" ]; then
 else
         echo ""
         printf "${RED}\"${in}\"${NC} is not a valid option...\n";
-        printf "\nUsage: ${RED}${0} [ setup | reset ]${NC}\n";
+        printf "\nUsage: ${RED}${0} [ --setup | --reset ]${NC}\n";
         printf "\nThis script will exit after two failed attempts...\n";
-
-        if [ "${i}" == 3 ]; then
-                exit 1
+        if [[ $i == 2 ]]; then
+                exit 0
         fi
-
+        ((i++))
         test_input
 fi
-
-}
+}    
 ###############################################################################
 ###############################################################################
 ###############################################################################

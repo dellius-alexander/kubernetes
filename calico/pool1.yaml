@@ -1,0 +1,44 @@
+---
+# For move details see: https://docs.projectcalico.org/reference/resources/ippool 
+# The pod CIDR was 192.168.0.0/16. The /16 means 16 bits of a 32-bit IPv4 address 
+#   is the fixed prefix, therefore 16 bits are freely variable within the CIDR, 
+#   or about 64K addresses. For our first IP pool, we define the prefix 
+#   192.168.0.0/18, leaving only 14 bits free, or about 16382 addresses for pods. 
+#   This is enough for a very large Kubernetes cluster, and it still leaves a lot 
+#   of room in the pod CIDR if we want to create some more IP pools.
+# Formula for number of address based on cidr notation is: 2^(32-n) -2
+#   We subtract 2 address to account for the network and broadcast address 
+#   which are never assigned to hosts.
+---
+
+apiVersion: projectcalico.org/v3
+kind: IPPool
+metadata:
+  name: pool1
+spec:
+  # Desc: IP range to use for this pool. 
+  # Values: A valid IPv4 or IPv6 CIDR. Subnet length must 
+  #   be at least big enough to fit a single block (by default /26 for IPv4 or 
+  #   /122 for IPv6). Must not overlap with the Link Local range 169.254.0.0/16 
+  #   or fe80::/10.
+  cidr: 192.168.0.0/18
+  # Desc: The mode defining when IPIP will be used. Cannot be set at the same 
+  #   time as vxlanMode.
+  # Values: Always, CrossSubnet, Never
+  ipipMode: Never
+  # Desc: When enabled, packets sent from Calico networked containers in this 
+  #   pool to destinations outside of this pool will be masqueraded.
+  # Values: true, false
+  natOutgoing: true
+  # Desc: When set to true, Calico IPAM will not assign addresses from this pool.
+  #   We set disabled to true, meaning that Calico will not create new pods with
+  #   addresses in the pool but will still recognize pods with these addresses as
+  #   part of the Calico network
+  # Values: true, false
+  disabled: false
+  # Desc: Selects the nodes that Calico IPAM should assign addresses from this 
+  #   pool to. The nodeSelector is a label selector which determines which 
+  #   nodes use the pool. They are both set to all() meaning all nodes can use 
+  #   the pools.
+  # Values: see: https://docs.projectcalico.org/reference/resources/ippool#node-selector
+  nodeSelector: all()
