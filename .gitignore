@@ -1,4 +1,4 @@
 # Ignore these files and directories
-.vscode
+**.vscode
 config
 /**/settings.json**/**
