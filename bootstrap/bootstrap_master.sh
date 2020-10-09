@@ -268,7 +268,7 @@ if [ -f $1 ]; then
     # Load Environment Variables
     export $(cat $1 | grep -v '#' | awk '/=/ {print $1}')
 fi
-Checking if environments have loaded
+    # Checking if environments have loaded
 echo "Master Node address: ${MASTER_NODE}"
 echo "Worker node 1 address: ${WORKER_NODE_1}"
 echo "Worker node 2 address: ${WORKER_NODE_2}"
