@@ -206,11 +206,11 @@ function join()
 {
 status=""
         ## Just join the cluster
-if [[ -z ${JOIN_TOKEN} ]]; then
+if [[ -z ${__JOIN_TOKEN__} ]]; then
         printf "\n${RED}Kubeadm join token is not set...${NC}\n"
         test_input "join"
 else
-        echo & ${JOIN_TOKEN}  2>/dev/null &&
+        echo & ${__JOIN_TOKEN__}  2>/dev/null &&
 
         wait $!
         if [ "$?" != 0 ]; then
@@ -228,15 +228,15 @@ wait $!
 function reset()
 {
 printf "User: ${K8S_USER} \nHome Directory: $USER_HOME\n"
-if [[ -z ${JOIN_TOKEN} ]]; then
+if [[ -z ${__JOIN_TOKEN__} ]]; then
         printf ("This scripts requires you set environment variable for kubernetes join token.  "
                 "\nThe format for the token should be exported in the current running shell as an environment variable. "
-                " Such as: \n\t${RED}export K8S_JOIN_TOKEN=<k8s join token> ${NC}\n")
-        printf ("\tEx: \n\t ${RED}export K8S_JOIN_TOKEN='kubeadm join 10.0.0.129:6443 --token 6rvyd6.ej0wp9hvm7o6ybpe \ "
+                " Such as: \n\t${RED}export __JOIN_TOKEN__=<k8s join token> ${NC}\n")
+        printf ("\tEx: \n\t ${RED}export __JOIN_TOKEN__='kubeadm join 10.0.0.129:6443 --token 6rvyd6.ej0wp9hvm7o6ybpe \ "
                 "\n\t --discovery-token-ca-cert-hash sha256:828ce1659093eb90f310956a8b0821f381cad388fac8686af3390e55c545b053'${NC} \n")
         printf ("You may need to run the command on your master node to get the join token, like: "
                 "\n\t${RED}kubeadm token create --print-join-command ${NC}\n")
-        printf ("\nTry again after you set: ${RED}K8S_JOIN_TOKEN=<Join command token>${NC}\n\n")
+        printf ("\nTry again after you set: ${RED}__JOIN_TOKEN__=<Join command token>${NC}\n\n")
         exit 1
 else
 
@@ -338,24 +338,24 @@ in=$(check_env "${in}" "You entered: ")
         ## Check if command is valid
 if [ "${in}" == "reset" ]; then
         declare -x JOIN_TOKEN=$(read -p 'Please enter kubeadm join token: ' v && echo $v)
-        declare -x JOIN_TOKEN=$(check_env "${JOIN_TOKEN}" "You Entered: ")
-        printf "\nJoin Token Set to: ${JOIN_TOKEN}\n"
-        reset "${JOIN_TOKEN}"
+        declare -x JOIN_TOKEN=$(check_env "${__JOIN_TOKEN__}" "You Entered: ")
+        printf "\nJoin Token Set to: ${__JOIN_TOKEN__}\n"
+        reset "${__JOIN_TOKEN__}"
 elif [ "${in}" == "join" ]; then
         declare -x JOIN_TOKEN=$(read -p 'Please enter kubeadm join token: ' v && echo $v)
-        declare -x JOIN_TOKEN=$(check_env "${JOIN_TOKEN}" "You Entered: ")
-        printf "\nJoin Token Set to: ${JOIN_TOKEN}\n"
-        join "${JOIN_TOKEN}"
+        declare -x JOIN_TOKEN=$(check_env "${__JOIN_TOKEN__}" "You Entered: ")
+        printf "\nJoin Token Set to: ${__JOIN_TOKEN__}\n"
+        join "${__JOIN_TOKEN__}"
 elif [ "${in}" == "create" ]; then
         declare -x JOIN_TOKEN=$(read -p 'Please enter kubeadm join token: ' v && echo $v)
-        declare -x JOIN_TOKEN=$(check_env "${JOIN_TOKEN}" "You Entered: ")
-        printf "\nJoin Token Set to: ${JOIN_TOKEN}\n"
-        create "${JOIN_TOKEN}"
+        declare -x JOIN_TOKEN=$(check_env "${__JOIN_TOKEN__}" "You Entered: ")
+        printf "\nJoin Token Set to: ${__JOIN_TOKEN__}\n"
+        create "${__JOIN_TOKEN__}"
 elif [ "${in}" == "test" ]; then
         printf "\nTest was successful...\n";
         declare -x JOIN_TOKEN=$(read -p 'Please enter kubeadm join token: ' v && echo $v)
-        declare -x JOIN_TOKEN=$(check_env "${JOIN_TOKEN}" "You entered: ")
-        printf "\nJoin Token Set to: ${JOIN_TOKEN}\n"
+        declare -x JOIN_TOKEN=$(check_env "${__JOIN_TOKEN__}" "You entered: ")
+        printf "\nJoin Token Set to: ${__JOIN_TOKEN__}\n"
         exit 0
 else
         echo ""
@@ -369,4 +369,9 @@ else
         test_input
 fi
 }
+###############################################################################
+###############################################################################
+# START PROCESS
+###############################################################################
+###############################################################################
 test_input "$1"

@@ -87,9 +87,9 @@ iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
 cat >/etc/hosts<<EOF
 127.0.0.1 localhost
 ::1 localhost
-${MASTER_NODE} k8s-master.example.com k8s-master
-${WORKER_NODE_1} k8s-worker-node-1.example.com k8s-worker-node-1
-${WORKER_NODE_2} k8s-worker-node-2.example.com k8s-worker-node-2
+${__MASTER_NODE__} k8s-master.example.com k8s-master
+${__WORKER_NODE_1__} k8s-worker-node-1.example.com k8s-worker-node-1
+${__WORKER_NODE_2__} k8s-worker-node-2.example.com k8s-worker-node-2
 EOF
 
     # Setup firewall rules
@@ -174,13 +174,13 @@ wait $!
 
     # On kmaster
     # Initialize Kubernetes Cluster
-echo & ${KUBEADM} init --apiserver-advertise-address=${APISERVER_ADVERTISE_ADDRESS} \
---pod-network-cidr=${__POD_NETWORK_CIDR_}
+echo & ${KUBEADM} init --apiserver-advertise-address=${__APISERVER_ADVERTISE_ADDRESS__} \
+--pod-network-cidr=${__POD_NETWORK_CIDR__}
 
     # Setup KUBECONFIG file:
 mkdir -p ${__KUBECONFIG_DIRECTORY__}/.kube
 cp -i /etc/kubernetes/admin.conf  ${__KUBECONFIG_DIRECTORY__}/config
-chown ${K8S_USER}:${K8S_USER}  ${__KUBECONFIG_DIRECTORY__}/config
+chown ${__K8S_USER__}:${__K8S_USER__}  ${__KUBECONFIG_DIRECTORY__}/config
 wait $!
 
     # Deploy Calico network
@@ -241,13 +241,13 @@ wait $!
 
     # On kmaster
     # Initialize Kubernetes Cluster
-echo & ${KUBEADM} init --apiserver-advertise-address=${APISERVER_ADVERTISE_ADDRESS} \
---pod-network-cidr=${__POD_NETWORK_CIDR_}
+echo & ${KUBEADM} init --apiserver-advertise-address=${__APISERVER_ADVERTISE_ADDRESS__} \
+--pod-network-cidr=${__POD_NETWORK_CIDR__}
 
     # Setup KUBECONFIG file:
 mkdir -p ${__KUBECONFIG_DIRECTORY__}/.kube
 cp -i /etc/kubernetes/admin.conf  ${__KUBECONFIG_DIRECTORY__}/config
-chown ${K8S_USER}:${K8S_USER}  ${__KUBECONFIG_DIRECTORY__}/config
+chown ${__K8S_USER__}:${__K8S_USER__}  ${__KUBECONFIG_DIRECTORY__}/config
 wait $!
 
     # Deploy Calico network
@@ -269,14 +269,14 @@ if [ -f $1 ]; then
     export $(cat $1 | grep -v '#' | awk '/=/ {print $1}')
 fi
     # Checking if environments have loaded
-echo "Master Node address: ${MASTER_NODE}"
-echo "Worker node 1 address: ${WORKER_NODE_1}"
-echo "Worker node 2 address: ${WORKER_NODE_2}"
-echo "Kubernetes API Address: ${APISERVER_ADVERTISE_ADDRESS}"
+echo "Master Node address: ${__MASTER_NODE__}"
+echo "Worker node 1 address: ${__WORKER_NODE_1__}"
+echo "Worker node 2 address: ${__WORKER_NODE_2__}"
+echo "Kubernetes API Address: ${__APISERVER_ADVERTISE_ADDRESS__}"
 echo "Kubernetes POD CIDR: ${__POD_NETWORK_CIDR__}"
-echo "User Home Directory: ${USER_HOME}"
-echo "User: ${K8S_USER}"
-echo "Kubernetes config file PATH: ${KUBECONFIG}"
+echo "User Home Directory: ${__USER_HOME__}"
+echo "User: ${__K8S_USER__}"
+echo "Kubernetes config file PATH: ${__KUBECONFIG__}"
 echo "Kubernetes Service Port: ${__KUBERNETES_SERVICE_PORT__}"
 echo "Calico file directory: ${__CALICO_YAML_DIRECTORY__}"
 echo "Kubeconfig directory: ${__KUBECONFIG_DIRECTORY__}"
@@ -326,9 +326,9 @@ elif [ "${in}" == "setup" ]; then
         setup
 elif [ "${in}" == "test" ]; then
         printf "\nTest was successful...\n";
-        declare -x JOIN_TOKEN=$(read -p 'Please enter kubeadm join token: ' v && echo $v)
-        declare -x JOIN_TOKEN=$(check_env "${JOIN_TOKEN}" "You entered: ")
-        printf "\nJoin Token Set to: ${JOIN_TOKEN}\n"
+        declare -x __JOIN_TOKEN__=$(read -p 'Please enter kubeadm join token: ' v && echo $v)
+        declare -x __JOIN_TOKEN__=$(check_env "${__JOIN_TOKEN__}" "You entered: ")
+        printf "\nJoin Token Set to: ${__JOIN_TOKEN__}\n"
         exit 0
 else
         echo ""

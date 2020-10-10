@@ -1,3 +1,5 @@
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -26,8 +28,8 @@ spec:
       serviceAccountName: calico-typha
       priorityClassName: system-cluster-critical
       containers:
-      - image: calico/typha:v3.8.0
-        name: calico-typha
+      - name: calico-typha
+        image: calico/typha:v3.8.0        
         ports:
         - containerPort: 5473
           name: calico-typha
