@@ -24,13 +24,13 @@ fi
 function kube_binary(){
         # Require sudo to run script
 if [[ -z ${KUBEADM} ]]; then
-    printf  ("\nUnable to locate ${RED}kubeadm${NC} binary. \nPlease re-run this script using "
-            "the ${RED}--setup${NC} flag.\n Usage:${RED} $0 [ --reset | --setup ]${NC}\n")
+    printf  "\nUnable to locate ${RED}kubeadm${NC} binary. \nPlease re-run this script using \
+            the ${RED}--setup${NC} flag.\n Usage:${RED} $0 [ --reset | --setup ]${NC}\n";
     printf "\n${RED}sudo $0 $*${NC}";
     exit 1
 elif [[ -z ${KUBECTL} ]]; then
-        printf ("\nUnable to locate ${RED}kubelet${NC} binary. \nPlease re-run this script using the "
-                "${RED}--setup${NC} flag.\n Usage:${RED} $0 [ --reset | --setup ]${NC}\n")
+        printf "\nUnable to locate ${RED}kubelet${NC} binary. \nPlease re-run this script using the \
+                ${RED}--setup${NC} flag.\n Usage:${RED} $0 [ --reset | --setup ]${NC}\n";
     printf "\n$RED}sudo $0 $*${NC}";
     exit 1
 fi
@@ -229,14 +229,14 @@ function reset()
 {
 printf "User: ${K8S_USER} \nHome Directory: $USER_HOME\n"
 if [[ -z ${__JOIN_TOKEN__} ]]; then
-        printf ("This scripts requires you set environment variable for kubernetes join token.  "
-                "\nThe format for the token should be exported in the current running shell as an environment variable. "
-                " Such as: \n\t${RED}export __JOIN_TOKEN__=<k8s join token> ${NC}\n")
-        printf ("\tEx: \n\t ${RED}export __JOIN_TOKEN__='kubeadm join 10.0.0.129:6443 --token 6rvyd6.ej0wp9hvm7o6ybpe \ "
-                "\n\t --discovery-token-ca-cert-hash sha256:828ce1659093eb90f310956a8b0821f381cad388fac8686af3390e55c545b053'${NC} \n")
-        printf ("You may need to run the command on your master node to get the join token, like: "
-                "\n\t${RED}kubeadm token create --print-join-command ${NC}\n")
-        printf ("\nTry again after you set: ${RED}__JOIN_TOKEN__=<Join command token>${NC}\n\n")
+        printf "This scripts requires you set environment variable for kubernetes join token.  \
+                \nThe format for the token should be exported in the current running shell as an environment variable. \
+                Such as: \n\t${RED}export __JOIN_TOKEN__=<k8s join token> ${NC}\n";
+        printf "\tEx: \n\t ${RED}export __JOIN_TOKEN__='kubeadm join 10.0.0.129:6443 --token 6rvyd6.ej0wp9hvm7o6ybpe \
+                \n\t --discovery-token-ca-cert-hash sha256:828ce1659093eb90f310956a8b0821f381cad388fac8686af3390e55c545b053'${NC} \n"
+        printf "You may need to run the command on your master node to get the join token, like: 
+                \n\t${RED}kubeadm token create --print-join-command ${NC}\n"
+        printf "\nTry again after you set: ${RED}__JOIN_TOKEN__=<Join command token>${NC}\n\n"
         exit 1
 else
 
@@ -337,24 +337,24 @@ done
 in=$(check_env "${in}" "You entered: ")
         ## Check if command is valid
 if [ "${in}" == "reset" ]; then
-        declare -x JOIN_TOKEN=$(read -p 'Please enter kubeadm join token: ' v && echo $v)
-        declare -x JOIN_TOKEN=$(check_env "${__JOIN_TOKEN__}" "You Entered: ")
+        declare -x __JOIN_TOKEN__=$(read -p 'Please enter kubeadm join token: ' v && echo $v)
+        declare -x __JOIN_TOKEN__=$(check_env "${__JOIN_TOKEN__}" "You Entered: ")
         printf "\nJoin Token Set to: ${__JOIN_TOKEN__}\n"
         reset "${__JOIN_TOKEN__}"
 elif [ "${in}" == "join" ]; then
-        declare -x JOIN_TOKEN=$(read -p 'Please enter kubeadm join token: ' v && echo $v)
-        declare -x JOIN_TOKEN=$(check_env "${__JOIN_TOKEN__}" "You Entered: ")
+        declare -x __JOIN_TOKEN__=$(read -p 'Please enter kubeadm join token: ' v && echo $v)
+        declare -x __JOIN_TOKEN__=$(check_env "${__JOIN_TOKEN__}" "You Entered: ")
         printf "\nJoin Token Set to: ${__JOIN_TOKEN__}\n"
         join "${__JOIN_TOKEN__}"
 elif [ "${in}" == "create" ]; then
-        declare -x JOIN_TOKEN=$(read -p 'Please enter kubeadm join token: ' v && echo $v)
-        declare -x JOIN_TOKEN=$(check_env "${__JOIN_TOKEN__}" "You Entered: ")
+        declare -x __JOIN_TOKEN__=$(read -p 'Please enter kubeadm join token: ' v && echo $v)
+        declare -x __JOIN_TOKEN__=$(check_env "${__JOIN_TOKEN__}" "You Entered: ")
         printf "\nJoin Token Set to: ${__JOIN_TOKEN__}\n"
         create "${__JOIN_TOKEN__}"
 elif [ "${in}" == "test" ]; then
         printf "\nTest was successful...\n";
-        declare -x JOIN_TOKEN=$(read -p 'Please enter kubeadm join token: ' v && echo $v)
-        declare -x JOIN_TOKEN=$(check_env "${__JOIN_TOKEN__}" "You entered: ")
+        declare -x __JOIN_TOKEN__=$(read -p 'Please enter kubeadm join token: ' v && echo $v)
+        declare -x __JOIN_TOKEN__=$(check_env "${__JOIN_TOKEN__}" "You entered: ")
         printf "\nJoin Token Set to: ${__JOIN_TOKEN__}\n"
         exit 0
 else
