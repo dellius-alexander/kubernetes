@@ -1,3 +1,13 @@
+# https://docs.projectcalico.org/manifests/calico.yaml
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: calico-kube-controllers
+  namespace: kube-system
+
+
 ---
 
 # Source: calico/templates/calico-config.yaml
@@ -39,7 +49,7 @@ data:
               "type": "calico-ipam",
               "assign_ipv4": "true",
               "assign_ipv6": "false",
-              "ipv4_pools": "192.168.0.0/18, 192.168.0.0/19, default-ipv4-ippool"
+              "ipv4_pools": "'192.168.0.0/18','192.168.0.0/19','default-ipv4-ippool'"
           },
           "policy": {
               "type": "k8s"
@@ -60,11 +70,11 @@ data:
       ]
     }
 
+---
 # Source: calico/templates/kdd-crds.yaml
 
 
 ---
-
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -198,11 +208,9 @@ status:
   conditions: []
   storedVersions: []
 
-
-
 ---
 
-
+---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -376,11 +384,9 @@ status:
   conditions: []
   storedVersions: []
 
-
-  
 ---
 
-
+---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -447,11 +453,9 @@ status:
   conditions: []
   storedVersions: []
 
-  
-
 ---
 
-
+---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -994,12 +998,9 @@ status:
   conditions: []
   storedVersions: []
 
-
-  
 ---
 
-
-
+---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -1773,11 +1774,9 @@ status:
   conditions: []
   storedVersions: []
 
-
 ---
 
-
-  
+---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -1833,11 +1832,9 @@ status:
   conditions: []
   storedVersions: []
 
-
 ---
 
-
-  
+---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -1948,11 +1945,9 @@ status:
   conditions: []
   storedVersions: []
 
-
 ---
 
-
-  
+---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -2037,11 +2032,9 @@ status:
   conditions: []
   storedVersions: []
 
-
 ---
 
-
-  
+---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -2096,11 +2089,9 @@ status:
   conditions: []
   storedVersions: []
 
-
 ---
 
-
-  
+---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -2157,10 +2148,9 @@ status:
   conditions: []
   storedVersions: []
 
-
 ---
 
-  
+---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -2262,11 +2252,9 @@ status:
   conditions: []
   storedVersions: []
 
-
 ---
 
-
-  
+---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -2492,10 +2480,9 @@ status:
   conditions: []
   storedVersions: []
 
-
 ---
 
-  
+---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -3250,11 +3237,9 @@ status:
   conditions: []
   storedVersions: []
 
-
-
 ---
 
-
+---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -3308,10 +3293,8 @@ status:
   conditions: []
   storedVersions: []
 
-
 ---
-
-  
+---
 # Source: calico/templates/calico-kube-controllers-rbac.yaml
 
 # Include a clusterrole for the kube-controllers component,
@@ -3383,10 +3366,7 @@ rules:
       - update
       # watch for changes
       - watch
-
-
 ---
-
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -3399,12 +3379,9 @@ subjects:
 - kind: ServiceAccount
   name: calico-kube-controllers
   namespace: kube-system
-
-  
-
 ---
 
-
+---
 # Source: calico/templates/calico-node-rbac.yaml
 # Include a clusterrole for the calico-node DaemonSet,
 # and bind it to the calico-node serviceaccount.
@@ -3554,7 +3531,6 @@ rules:
       - get
 
 ---
-
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -3569,7 +3545,6 @@ subjects:
   namespace: kube-system
 
 ---
-
 # Source: calico/templates/calico-node.yaml
 # This manifest installs the calico-node container, as well
 # as the CNI plugins and network config on
@@ -3853,8 +3828,6 @@ spec:
           hostPath:
             type: DirectoryOrCreate
             path: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/nodeagent~uds
-
-
 ---
 
 apiVersion: v1
@@ -3863,10 +3836,7 @@ metadata:
   name: calico-node
   namespace: kube-system
 
-
 ---
-
-
 # Source: calico/templates/calico-kube-controllers.yaml
 # See https://github.com/projectcalico/kube-controllers
 apiVersion: apps/v1
@@ -3916,13 +3886,6 @@ spec:
               - /usr/bin/check-status
               - -r
 
----
-
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: calico-kube-controllers
-  namespace: kube-system
 
 ---
 # Source: calico/templates/calico-etcd-secrets.yaml
