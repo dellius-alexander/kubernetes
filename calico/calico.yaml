@@ -1,4 +1,5 @@
 # https://docs.projectcalico.org/manifests/calico.yaml
+# https://docs.projectcalico.org/v3.14/manifests/calico.yaml
 ---
 
 apiVersion: v1
@@ -47,7 +48,7 @@ data:
               "type": "calico-ipam",
               "assign_ipv4": "true",
               "assign_ipv6": "false",
-              "ipv4_pools": "'192.168.0.0/18','192.168.0.0/19','default-ipv4-ippool'"
+              "ipv4_pools": "192.168.0.0/18,192.168.0.0/19,default-ipv4-ippool"
           },
           "policy": {
               "type": "k8s"

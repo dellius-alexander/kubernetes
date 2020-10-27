@@ -9,4 +9,5 @@
 NFS_CONFIG.md
 
 typha.yaml
+k8s.env
 

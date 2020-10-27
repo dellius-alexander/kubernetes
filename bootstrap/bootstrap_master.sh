@@ -267,6 +267,9 @@ function get_env(){
 if [ -f $1 ]; then
     # Load Environment Variables
     export $(cat $1 | grep -v '#' | awk '/=/ {print $1}')
+else
+    printf "${RED}Unable to load file. Check your input and rerun again...${NC}\n"
+    exit $?
 fi
     # Checking if environments have loaded
 echo "Master Node address: ${__MASTER_NODE__}"
