@@ -70,7 +70,6 @@ data:
     }
 
 
-
 # Source: calico/templates/kdd-crds.yaml
 ---
 

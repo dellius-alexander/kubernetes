@@ -1,13 +1,11 @@
-# Ignore these files and directories
+# Ignore Directories
 
-**/.vscode
+.vscode
 
-# My scratch pad
+# Ignore Files
 .scratch
-
-# NFS share tutorial
 NFS_CONFIG.md
-
+config.example
 typha.yaml
 k8s.env
-
+calico-kubeconfig
