@@ -3,8 +3,8 @@
 ###############################################################################
 ###############################################################################
     # Verify kubelet present on host
-KUBEADM=$(whereis kubeadm | gawk -c '{print $2}')
-KUBECTL=$(whereis kubectl | gawk -c '{print $2}')
+KUBEADM=$(command -v kubeadm)
+KUBECTL=$(command -v kubectl)
 RED='\033[0;31m' # Red
 NC='\033[0m' # No Color CAP
 ###############################################################################
@@ -186,9 +186,14 @@ wait $!
     # Deploy Calico network
     # Source: https://docs.projectcalico.org/v3.14/manifests/calico.yaml
     # Modify the config map as needed:
-echo & ${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__} create -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
+${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__} create -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
+
+    # Metric Server
+${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  apply -f metric-server.yaml
+wait $!
+
     # Cluster join command
-echo & ${KUBEADM} token create --print-join-command
+${KUBEADM} token create --print-join-command
 exit 0
 }   # END OF SETUP
 ###############################################################################
@@ -253,9 +258,15 @@ wait $!
     # Deploy Calico network
     # Source: https://docs.projectcalico.org/v3.14/manifests/calico.yaml
     # Modify the config map as needed:
-echo & ${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  create -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
+${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  create -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
+wait $!
+
+    # Metric Server
+${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  apply -f metric-server.yaml
+wait $!
+
     # Cluster join command
-echo & ${KUBEADM} token create --print-join-command
+${KUBEADM} token create --print-join-command
 exit 0
 }   # END OF RESET
 ###############################################################################
