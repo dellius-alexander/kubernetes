@@ -7,5 +7,5 @@
 NFS_CONFIG.md
 config.example
 typha.yaml
-k8s.env
+**/k8s.env
 calico-kubeconfig

@@ -30,7 +30,7 @@ curl https://github.com/projectcalico/calicoctl/releases/download/v3.14.0/calico
 wait $!
 chmod +x calicoctl
 mv calicoctl /usr/local/bin/
-exit &&
+exit 0
     # Configure calicoctl to access Kubernetes.
     # On most systems, kubeconfig is located at ~/.kube/config. You may wish to add the 
     # export lines to your ~/.bashrc so they will persist when you log in next time.
@@ -48,7 +48,7 @@ openssl req -newkey rsa:4096 \
            -keyout cni.key \
            -nodes \
            -out cni.csr \
-           -subj "/CN=calico-node" &&
+           -subj "/CN=calico-node"
     # We will sign this certificate using the main Kubernetes CA.
 openssl x509 -req -in cni.csr \
                   -CA /etc/kubernetes/pki/ca.crt \
@@ -58,7 +58,7 @@ openssl x509 -req -in cni.csr \
                   -days 365
 
 chown ${USER}:${USER} cni.crt
-exit &&
+exit 0
 }
 ###############################################################################
 ###############################################################################
@@ -70,31 +70,31 @@ function create_cni_plugin()
     # Next, we create a kubeconfig file for the CNI plugin to use to access Kubernetes.
 APISERVER=$(${KUBECTL} config view -o jsonpath='{.clusters[0].cluster.server}')
 
-echo & ${KUBECTL}  config set-cluster kubernetes \
+${KUBECTL}  config set-cluster kubernetes \
     --certificate-authority=/etc/kubernetes/pki/ca.crt \
     --embed-certs=true \
     --server=${APISERVER} \
-    --kubeconfig=cni.kubeconfig && \
+    --kubeconfig=cni.kubeconfig
 
-echo & ${KUBECTL}  config set-credentials calico-cni \
+${KUBECTL}  config set-credentials calico-cni \
     --client-certificate=cni.crt \
     --client-key=cni.key \
     --embed-certs=true \
-    --kubeconfig=cni.kubeconfig && \
+    --kubeconfig=cni.kubeconfig
 
-echo & ${KUBECTL} config set-context default \
+${KUBECTL} config set-context default \
     --cluster=kubernetes \
     --user=calico-node \
-    --kubeconfig=cni.kubeconfig && \
+    --kubeconfig=cni.kubeconfig
 
-echo & ${KUBECTL} config use-context default --kubeconfig=cni.kubeconfig
+${KUBECTL} config use-context default --kubeconfig=cni.kubeconfig
 }
 ###############################################################################
 ###############################################################################
 ###############################################################################
     ###############################################################################
     # Create the custom resource definitions in Kubernetes.
-echo & ${KUBECTL} apply -f crds.yaml
+${KUBECTL} apply -f crds.yaml
 
     # heck if calicoctl exist 
 if [ $(whereis calicoctl | grep -c "calicoctl") == 0 ]; then
@@ -114,8 +114,8 @@ create_cni_auth
     # Create cni plugin kubeconfig 
 create_cni_plugin
     # Apply the calico.yaml file
-echo & ${KUBECTL} create clusterrolebinding calico-node --clusterrole=calico-node --user=calico-node
-echo & ${KUBECTL}apply -f calico.yaml
+${KUBECTL} create clusterrolebinding calico-node --clusterrole=calico-node --user=calico-node
+${KUBECTL}apply -f calico.yaml
     # Create the config directory
 
 mkdir -p /etc/cni/net.d/
