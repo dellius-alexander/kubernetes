@@ -124,7 +124,7 @@ We have to modify /etc/exports file to make an entry of directory /nfsfileshare 
 
 * /nfsfileshare: shared directory
 
-    *[***Note***](#): /nfsfileshare is an arbitrary name used for the purpose of this guide. It is recommended that you use a meaningful name for your NFS share directory. The machines may be listed by their DNS address or their IP address (e.g., machine.company.com or 10.0.0.15/255.255.255.240). Using IP addresses is more reliable and more secure. Using the IP Address & Subnet Mask pair restricts access to a specific block of hosts within that Subnet block. In this case the client address requesting access must be in the range of addresses all inclusive of 10.0.0.15 - 10.0.0.29, to gain access to the remote NFS directory.*
+    ***Note***: /nfsfileshare is an arbitrary name used for the purpose of this guide. It is recommended that you use a meaningful name for your NFS share directory. The machines may be listed by their DNS address or their IP address (e.g., machine.company.com or 10.0.0.15/255.255.255.240). Using IP addresses is more reliable and more secure. Using the IP Address & Subnet Mask pair restricts access to a specific block of hosts within that Subnet block. In this case the client address requesting access must be in the range of addresses all inclusive of 10.0.0.15 - 10.0.0.29, to gain access to the remote NFS directory.*
 * 10.0.0.20: is the IP address of client machine. We can also use the hostname instead of an IP address. It is also possible to define the range of clients with subnet like: ***10.0.0.15/28***, which was used in the above example.
 <br/>
 <br/>
