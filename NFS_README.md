@@ -144,7 +144,6 @@ $ exit
 
 ### OR 
 <br/>
-<br/>
 
 ```Bash
 # Manually enter NFS directory into /etc/exports using built-in text editor.
@@ -230,7 +229,7 @@ $ yum install -y nfs-utils
 
 ### Create NFS Share Directory on Client machine:
 <br/>
-Now, create a directory on NFS client to mount the NFS share directory /nfsfileshare which we have created on the NFS server.
+Now, create a directory on the NFS client to mount the NFS share directory /nfsfileshare which we have created on the NFS server.
 <br/>
 <br/>
 
@@ -241,10 +240,10 @@ $ mkdir /mnt/nfsfileshare
 ### Mount NFS Share on Client machine:
 <br/>
 
-Use the below command to mount the NFS share /nfsfileshare from NFS server 10.0.0.10 in /mnt/nfsfileshare on NFS client.
+Use the below command to mount the NFS share directory ***/nfsfileshare*** from NFS server 10.0.0.10 to ***/mnt/nfsfileshare*** on NFS client.
 
 * Command format:
-    - mount  \<IP Address>:/share/directory/on/server   /share/directory/on/client
+    - mount  \<IP Address>:/share/directory/on/server  /share/directory/on/client
 <br/>
 <br/>
 
@@ -282,18 +281,19 @@ Create a file on the mounted directory to verify the read and write access on NF
 <br/>
 
 ```Bash
-$ cat >> /mnt/nfsfileshare/test <<EOF
+# Create a new file in mounted directory
+$ cat >> /mnt/nfsfileshare/test.txt <<EOF
 This is a test file...
 EOF
 # Verify that file exists
-$ cat /mnt/nfsfileshare/test
-# Output
+$ cat /mnt/nfsfileshare/test.txt
 This is a test file...
 ```
 
 If the above command returns no error, you have working NFS setup.
 
-### Automount NFS Shares:<br/>
+### Automount NFS Shares:
+<br/>
 
 To mount the shares automatically on every reboot, you would need to modify /etc/fstab file of your NFS client. [Click here for the complete list of fstab file configuration](https://man7.org/linux/man-pages/man5/fstab.5.html) or type ***man fstab*** at the CLi.
 
@@ -304,8 +304,8 @@ Format of /etc/fstab file configuration:
     - ***Mount point*** – the second field specifies the mount point, the directory where the partition or disk will be mounted. This should usually be an empty directory in another file system.
     - ***File system type*** – the third field specifies the file system type.
     - ***Options*** – the fourth field specifies the mount options. Most file systems support several mount options, which modify how the kernel treats the file system. You may specify multiple mount options, separated by commas.
-    - ***Backup operation*** – the fifth field contains a 1 if the dump utility should back up a partition or a 0 if it shouldn’t. If you never use the dump backup program, you can ignore this option.
-    - ***File system check order*** – the sixth field specifies the order in which fsck checks the device/partition for errors at boot time. A 0 means that fsck should not check a file system. Higher numbers represent the check order. The root partition should have a value of 1 , and all others that need to be checked should have a value of 2.
+    - ***Backup operation/Dump*** – the fifth field contains a 1 if the dump utility should back up a partition or a 0 if it shouldn’t. If you never use the dump backup program, you can ignore this option.
+    - ***File system check order/Pass*** – the sixth field specifies the order in which fsck checks the device/partition for errors at boot time. A 0 means that fsck should not check a file system. Higher numbers represent the check order. The root partition should have a value of 1 , and all others that need to be checked should have a value of 2.
 <br/>
 <br/>
 
@@ -328,7 +328,7 @@ UUID=60a496d0-69f4-4355-aef0-c31d688dda1b /boot                   xfs     defaul
 /dev/mapper/centos-swap swap                    swap    defaults        0 0
 10.0.0.10:/nfsfileshare /mnt/nfsfileshare    nfs     nosuid,rw,sync,hard,intr  0  0
 ```
-Save and close the file. <br/>
+Save and close the file.<br/>
 Reboot the client machine and check whether the share is automatically mounted or not.
 <br/>
 <br/>
@@ -346,6 +346,27 @@ $ mount | grep nfs
 # Output
 sunrpc on /var/lib/nfs/rpc_pipefs type rpc_pipefs (rw,relatime)
 10.0.0.10:/nfsfileshare on /mnt/nfsfileshare type nfs4 (rw,nosuid,relatime,sync,vers=4.1,rsize=131072,wsize=131072,namlen=255,hard,proto=tcp,port=0,timeo=600,retrans=2,sec=sys,clientaddr=10.0.0.20,local_lock=none,addr=10.0.0.10)
+```
+
+### OR
+
+You can use the df -hT command to check the mounted NFS share.
+<br/>
+<br/>
+
+```Bash
+$ df -hT
+# Output
+Filesystem                 Type      Size  Used Avail Use% Mounted on
+/dev/mapper/centos-root    xfs        50G  1.2G   49G   3% /
+devtmpfs                   devtmpfs  485M     0  485M   0% /dev
+tmpfs                      tmpfs     496M     0  496M   0% /dev/shm
+tmpfs                      tmpfs     496M  6.7M  490M   2% /run
+tmpfs                      tmpfs     496M     0  496M   0% /sys/fs/cgroup
+/dev/mapper/centos-home    xfs        47G   33M   47G   1% /home
+/dev/sda1                  xfs      1014M  154M  861M  16% /boot
+tmpfs                      tmpfs     100M     0  100M   0% /run/user/0
+10.0.0.10:/nfsfileshare nfs4       50G  1.2G   49G   3% /mnt/nfsfileshare
 ```
 
 If you want to unmount that shared directory from your NFS client after you are done with the file sharing, you can unmount that particular directory using umount command.

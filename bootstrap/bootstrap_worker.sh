@@ -355,10 +355,11 @@ elif [ "${in}" == "create" ]; then
         printf "\nJoin Token Set to: ${__JOIN_TOKEN__}\n"
         create "${__JOIN_TOKEN__}"
 elif [ "${in}" == "test" ]; then
-        printf "\nTest was successful...\n";
         declare -x __JOIN_TOKEN__=$(read -p 'Please enter kubeadm join token: ' v && echo $v)
         declare -x __JOIN_TOKEN__=$(check_env "${__JOIN_TOKEN__}" "You entered: ")
         printf "\nJoin Token Set to: ${__JOIN_TOKEN__}\n"
+        get_env k8s.env
+        printf "\nTest was successful...\n";        
         exit 0
 else
         echo ""

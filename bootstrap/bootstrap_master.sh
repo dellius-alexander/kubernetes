@@ -78,7 +78,7 @@ wait $!
 #               INITIAL SETUP OF CLUSTER NODE
 ###############################################################################
 function setup() {
-get_env k8s.env.example
+get_env k8s.env
 ###############################################################################
     # Reset IP tables
 iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
@@ -201,7 +201,7 @@ exit 0
 #               RESET CLUSTER
 ###############################################################################
 function reset(){
-get_env k8s.env.example
+get_env k8s.env
 ###############################################################################
     # Verify kubeadm and kubectl binary
 kube_binary
@@ -339,10 +339,8 @@ if [ "${in}" == "reset" ]; then
 elif [ "${in}" == "setup" ]; then
         setup
 elif [ "${in}" == "test" ]; then
-        printf "\nTest was successful...\n";
-        declare -x __JOIN_TOKEN__=$(read -p 'Please enter kubeadm join token: ' v && echo $v)
-        declare -x __JOIN_TOKEN__=$(check_env "${__JOIN_TOKEN__}" "You entered: ")
-        printf "\nJoin Token Set to: ${__JOIN_TOKEN__}\n"
+        get_env k8s.env
+        printf "\nTest was successful...\n";        
         exit 0
 else
         echo ""
