@@ -11,7 +11,7 @@
 * [Configure Firewall](#Configure_Firewall)
 * [Configure NFS Client](#Configure_NFS_Client)
 
-NFS stands for Network File System, helps you to share files and folders between Linux / Unix systems, developed by SUN Microsystems in 1990. NFS enables you to mount a remote share locally.
+NFS stands for Network File System, it helps you to share files and folders between Linux / Unix systems, developed by SUN Microsystems in 1990. NFS enables you to mount a remote share locally.
 
 This guide helps you to setup NFS server on CentOS 7 / RHEL 7.
 
