@@ -3,6 +3,8 @@
 ### Kubernetes Configuration bootstraps:
    - One Master Node
    - Two Worker Nodes
+   
+You can optionally add an NFS share server to our Cluster.  [Click Here for More Details](NFS_README.md)
     
 ***Note: Kubernetes setup for Bare Metal configuration of minimal CentOS 7 / RHEL 7 machines.***
 
