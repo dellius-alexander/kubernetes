@@ -4,7 +4,7 @@
 
 # Ignore Files
 .scratch
-config.example
+bootstrap/config.example
 typha.yaml
 **/k8s.env
 calico-kubeconfig
