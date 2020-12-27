@@ -190,7 +190,7 @@ ${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  create -f $(find ~+ -type f 
 wait $!
 
     # Metric Server
-${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.4.1/components.yaml
+${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  apply -f $(find ~+ -type f -name 'metric-server.yaml')
 wait $!
 
     # Cluster join command
@@ -259,11 +259,11 @@ wait $!
     # Deploy Calico network
     # Source: https://docs.projectcalico.org/v3.14/manifests/calico.yaml
     # Modify the config map as needed:
-${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  create -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
+${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  create -f $(find ~+ -type f -name 'calico.yaml')
 wait $!
 
     # Metric Server
-${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.4.1/components.yaml
+${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  apply -f $(find ~+ -type f -name 'metric-server.yaml')
 wait $!
 
     # Cluster join command

@@ -1,5 +1,11 @@
 # Kubernetes Installation
 
+---
+## Contents:
+
+* [On Master Node](#Master_Node)
+* [On Worker Node](#Worker_Node)
+
 ### Kubernetes Configuration bootstraps:
    - One Master Node
    - Two Worker Nodes
@@ -8,10 +14,14 @@ You can optionally add an NFS share server to your Cluster.  [Click Here for Mor
     
 ***Note: Kubernetes setup for Bare Metal configuration of minimal CentOS 7 / RHEL 7 machines.***
 
+<br/>
+
 ---
 ---
 
-## <h2 id="On Master">On Master</h2>
+<br/>
+
+## <h2 id="Master_Node">On Master</h2>
 
 <br/>
 
@@ -121,10 +131,14 @@ This will remove the node-role.kubernetes.io/master taint from any nodes that ha
 
 For more information see kubernetes documentation: [control-plane-node-isolation](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#control-plane-node-isolation)
 
+<br/>
+
 ---
 ---
 
-## <h2 id="Worker Node">Worker Node</h2>
+<br/>
+
+## <h2 id="Worker_Node">Worker Node</h2>
 <br/>
 
 ***Note: the below steps must be repeated on each worker node.***
