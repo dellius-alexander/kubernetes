@@ -67,7 +67,7 @@ firewall-cmd --zone=public --add-port=5473/tcp --permanent
     # Reload firewall
 firewall-cmd --reload
     # List ports
-echo
+    
 echo "Ports assignments: "
 firewall-cmd --zone=public --permanent --list-ports
 sleep 3
@@ -174,7 +174,7 @@ wait $!
 
     # On kmaster
     # Initialize Kubernetes Cluster
-echo & ${KUBEADM} init --apiserver-advertise-address=${__APISERVER_ADVERTISE_ADDRESS__} \
+${KUBEADM} init --apiserver-advertise-address=${__APISERVER_ADVERTISE_ADDRESS__} \
 --pod-network-cidr=${__POD_NETWORK_CIDR__}
 
     # Setup KUBECONFIG file:
@@ -186,7 +186,7 @@ wait $!
     # Deploy Calico network
     # Source: https://docs.projectcalico.org/v3.14/manifests/calico.yaml
     # Modify the config map as needed:
-${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  create -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
+${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  create -f $(find ~+ -type f -name 'calico.yaml')
 wait $!
 
     # Metric Server
@@ -207,7 +207,7 @@ get_env k8s.env
     # Verify kubeadm and kubectl binary
 kube_binary
     # Reset Master Node
-echo && ${KUBEADM} reset
+${KUBEADM} reset yes
 wait $!
     # Reset IP tables
 iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
@@ -247,7 +247,7 @@ wait $!
 
     # On kmaster
     # Initialize Kubernetes Cluster
-echo & ${KUBEADM} init --apiserver-advertise-address=${__APISERVER_ADVERTISE_ADDRESS__} \
+${KUBEADM} init --apiserver-advertise-address=${__APISERVER_ADVERTISE_ADDRESS__} \
 --pod-network-cidr=${__POD_NETWORK_CIDR__}
 
     # Setup KUBECONFIG file:
@@ -268,6 +268,8 @@ wait $!
 
     # Cluster join command
 ${KUBEADM} token create --print-join-command
+wait $!
+#
 exit 0
 }   # END OF RESET
 ###############################################################################

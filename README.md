@@ -15,7 +15,7 @@ You can optionally add an NFS share server to our Cluster.  [Click Here for More
 
 <br/>
 
-### 1. Clone Repo and Edit k8s.env.example File
+### 1. Clone Repo and Edit k8s.env.example File:
 
 <br/>
 
@@ -81,7 +81,7 @@ __USER_AUTH__=
 
 <br/>
 
-### 3. Execute the [***bootstrap_master.sh***](bootstrap/bootstrap_master.sh) script
+### 3. Execute the [***bootstrap_master.sh***](bootstrap/bootstrap_master.sh) script:
 <br/>
 
 The bootstrap_master.sh file must be run as ***sudo*** and requires one of three parameter options:
@@ -99,6 +99,27 @@ $ sudo ./bootstrap_master.sh <test | setup | reset>
 If no errors occurs, we will use the ***kubernetes join token***  to setup the woker node.<br/>
 The ***kubernetes join token*** should be printed upon completion of the bootstarp_master.sh script.  
 <br/>
+
+### 4. Single Node Cluser Configuration:
+<br/>
+
+If you want to be able to schedule Pods on the control-plane node aka master node, run the command below:
+
+***Note: The "bootstrap_master.sh setup" script parameter option will still write/update /etc/hosts for a three node cluster.  If you did not edit the environment file to add IP Addresses for the worker node you will need to remove these redundant entries in /etc/hosts file.***
+
+<br/>
+
+```bash
+$ kubectl taint nodes --all node-role.kubernetes.io/master-
+# With output looking something like:
+node/k8s-master untainted
+```
+
+<br/>
+
+This will remove the node-role.kubernetes.io/master taint from any nodes that have it, including the control-plane node, meaning that the scheduler will then be able to schedule Pods everywhere.
+
+For more information see kubernetes documentation: [control-plane-node-isolation](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#control-plane-node-isolation)
 
 ---
 ---

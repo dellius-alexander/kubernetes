@@ -3,8 +3,8 @@
 ###############################################################################
 ###############################################################################
         # Verify kubelet present on host
-KUBEADM=$(whereis kubeadm | gawk -c '{print $2}')
-KUBECTL=$(whereis kubectl | gawk -c '{print $2}')
+KUBEADM=$(command -v kubeadm)
+KUBECTL=$(command -v kubectl)
 RED='\033[0;31m' # Red
 NC='\033[0m' # No Color CAP
 ###############################################################################
@@ -59,7 +59,6 @@ firewall-cmd --zone=public --add-port=30000-32767/tcp --permanent
         # Reload firewall
 firewall-cmd --reload
         # List ports
-echo
 echo "Ports assignments: "
 firewall-cmd --zone=public --permanent --list-ports
 wait $!
@@ -249,7 +248,7 @@ fi
 
         #####################################################################
         # Restart Master Node
-echo & ${KUBEADM} reset
+${KUBEADM} reset
 wait $!
         #####################################################################
         # Deleting contents of config directories:

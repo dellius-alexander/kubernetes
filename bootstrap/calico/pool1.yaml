@@ -9,8 +9,6 @@
 # Formula for number of address based on cidr notation is: 2^(32-n) -2
 #   We subtract 2 address to account for the network and broadcast address 
 #   which are never assigned to hosts.
----
-
 apiVersion: projectcalico.org/v3
 kind: IPPool
 metadata:
