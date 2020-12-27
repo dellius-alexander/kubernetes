@@ -14,12 +14,8 @@ You can optionally add an NFS share server to your Cluster.  [Click Here for Mor
     
 ***Note: Kubernetes setup for Bare Metal configuration of minimal CentOS 7 / RHEL 7 machines.***
 
-<br/>
-
 ---
 ---
-
-<br/>
 
 ## <h2 id="Master_Node">On Master</h2>
 
@@ -152,12 +148,9 @@ This will remove the node-role.kubernetes.io/master taint from any nodes that ha
 
 For more information see kubernetes documentation: [control-plane-node-isolation](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#control-plane-node-isolation)
 
-<br/>
-
 ---
 ---
 
-<br/>
 
 ## <h2 id="Worker_Node">Worker Node</h2>
 <br/>
@@ -226,7 +219,3 @@ k8s-worker-node-2    Ready    worker   1d    v1.19.2
 <br/>
 
 ---
-
-<style>
-
-</style>
