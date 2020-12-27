@@ -1,9 +1,3 @@
-<style>
-    .background-plane{
-        background-color: black;
-}
-</style>
-
 # Kubernetes Installation
 
 ---
@@ -35,7 +29,7 @@ You can optionally add an NFS share server to your Cluster.  [Click Here for Mor
 
 <br/>
 
-<div class="background-plane">
+<div sytle="background-color:black;">
 
 ```Bash
 # Clone Repo
