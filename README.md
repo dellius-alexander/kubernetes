@@ -150,7 +150,7 @@ k8s-worker-node-2    Ready    worker   1d    v1.19.2
 
 <br/>
 
-***Our worker node is configured and ready to go now.***
+***Our kubernetes cluster is configured and ready to go now.***
 <br/>
 
 ---
