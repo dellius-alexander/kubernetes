@@ -72,6 +72,8 @@ Here, we will use CentOS 7 minimal for this demo. This guide should also work on
 
 Install NFS Server <br/>
 Install the below package for NFS server and firewall configuration tool using the yum command.
+<br/>
+<br/>
 
 ```Bash
 # Install on both Server & Client
@@ -79,18 +81,23 @@ $ yum install -y nfs-utils firewalld
 ```
 
 Once the packages are installed, enable and start NFS services.
+<br/>
+<br/>
+
 ```Bash
 # Do only on Server, Not client machine
 $ systemctl start nfs-server rpcbind
 $ systemctl enable nfs-server rpcbind
 ```
 
-### Create NFS Share:
+### Create NFS Share Directory:
 <br/>
 
 Now, let’s create a directory to share with the NFS client. Here we will be creating a new directory named ***nfsfileshare*** in the / partition or root partition.
 
 You can also share your existing directory with NFS.
+<br/>
+<br/>
 
 ```Bash
 # Create a directory to share with the NFS Client
@@ -99,7 +106,7 @@ $ mkdir /nfsfileshare
 $ chmod 777 /nfsfileshare/
 ```
 
-### Create a NFS share something like below:<br/>
+### Add NFS Share Direcotry to /etc/exports:<br/>
 
 We have to modify /etc/exports file to make an entry of directory /nfsfileshare that you want to share. [Click here for a list of options](http://nfs.sourceforge.net/nfs-howto/ar01s03.html#106), or type [**man exports**](https://linux.die.net/man/5/exports) for the man pages at CLi. 
 
@@ -137,6 +144,7 @@ $ exit
 
 ### OR 
 <br/>
+<br/>
 
 ```Bash
 # Manually enter NFS directory into /etc/exports using built-in text editor.
@@ -164,7 +172,7 @@ $ exportfs -r
 ```
 
 ### Extras:
-
+<br/>
 * exportfs -v: Displays a list of shares files and export options on a server.
 * exportfs -a: Exports all directories listed in /etc/exports.
 * exportfs -u: UnExport one or more directories.
@@ -196,6 +204,8 @@ As per the output, the /nfsfileshare is available on the NFS server (10.0.0.10) 
 <h2 id="Configure_Firewall">Configure Firewall</h2>
 <br/>
 We need to configure the firewall on the NFS server to allow NFS client to access the NFS share. To do that, run the following commands on the NFS server.
+<br/>
+<br/>
 
 ```Bash
 $ firewall-cmd --permanent --add-service mountd
@@ -204,7 +214,6 @@ $ firewall-cmd --permanent --add-service nfs
 $ firewall-cmd --reload
 ```
 
-
 ---
 ---
 <h2 id="Configure_NFS_Client">Configure NFS Client</h2><br/>
@@ -212,20 +221,26 @@ $ firewall-cmd --reload
 ### Install NFS Client:
 <br/>
 We need to install NFS packages on NFS client to mount a remote NFS share. Install NFS packages using below command.
+<br/>
+<br/>
 
 ```Bash
 $ yum install -y nfs-utils
 ```
 
 ### Mount NFS Share:
-
+<br/>
 Now, create a directory on NFS client to mount the NFS share directory /nfsfileshare which we have created on the NFS server.
+<br/>
+<br/>
 
 ```Bash
 $ mkdir /mnt/nfsfileshare
 ```
 
 Use the below command to mount the NFS share /nfsfileshare from NFS server 10.0.0.10 in /mnt/nfsfileshare on NFS client.
+<br/>
+<br/>
 
 ```Bash
 $ mount 10.0.0.10:/nfsfileshare /mnt/nfsfileshare
@@ -238,6 +253,9 @@ nfsd on /proc/fs/nfsd type nfsd (rw,relatime)
 ```
 
 Also, you can use the df -hT command to check the mounted NFS share.
+<br/>
+<br/>
+
 ```Bash
 $ df -hT
 # Output
@@ -254,6 +272,8 @@ tmpfs                      tmpfs     100M     0  100M   0% /run/user/0
 ```
 
 Create a file on the mounted directory to verify the read and write access on NFS share.
+<br/>
+<br/>
 
 ```Bash
 $ cat >> /mnt/nfsfileshare/test <<EOF
@@ -267,9 +287,11 @@ This is a test file...
 
 If the above command returns no error, you have working NFS setup.
 
-### Automount NFS Shares:
+### Automount NFS Shares:<br/>
 
 To mount the shares automatically on every reboot, you would need to modify /etc/fstab file of your NFS client.
+<br/>
+<br/>
 
 ```Bash
 # Change User to root.
@@ -290,14 +312,18 @@ UUID=60a496d0-69f4-4355-aef0-c31d688dda1b /boot                   xfs     defaul
 /dev/mapper/centos-swap swap                    swap    defaults        0 0
 10.0.0.10:/nfsfileshare /mnt/nfsfileshare    nfs     nosuid,rw,sync,hard,intr  0  0
 ```
-Save and close the file.
-
+Save and close the file. <br/>
 Reboot the client machine and check whether the share is automatically mounted or not.
+<br/>
+<br/>
 
 ```Bash
 $ reboot -h 0
 ```
+
 Verify the mounted share on the NFS client using mount command.
+<br/>
+<br/>
 
 ```Bash
 $ mount | grep nfs
@@ -307,6 +333,8 @@ sunrpc on /var/lib/nfs/rpc_pipefs type rpc_pipefs (rw,relatime)
 ```
 
 If you want to unmount that shared directory from your NFS client after you are done with the file sharing, you can unmount that particular directory using umount command.
+<br/>
+<br/>
 
 ```Bash
 $ umount /mnt/nfsfileshare
