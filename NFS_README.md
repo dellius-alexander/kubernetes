@@ -218,7 +218,7 @@ $ firewall-cmd --reload
 ---
 <h2 id="Configure_NFS_Client">Configure NFS Client</h2><br/>
 
-### Install NFS Client:
+### Install NFS package on Client machine:
 <br/>
 We need to install NFS packages on NFS client to mount a remote NFS share. Install NFS packages using below command.
 <br/>
@@ -228,7 +228,7 @@ We need to install NFS packages on NFS client to mount a remote NFS share. Insta
 $ yum install -y nfs-utils
 ```
 
-### Mount NFS Share:
+### Create NFS Share Directory on Client machine:
 <br/>
 Now, create a directory on NFS client to mount the NFS share directory /nfsfileshare which we have created on the NFS server.
 <br/>
@@ -238,7 +238,13 @@ Now, create a directory on NFS client to mount the NFS share directory /nfsfiles
 $ mkdir /mnt/nfsfileshare
 ```
 
+### Mount NFS Share on Client machine:
+<br/>
+
 Use the below command to mount the NFS share /nfsfileshare from NFS server 10.0.0.10 in /mnt/nfsfileshare on NFS client.
+
+* Command format:
+    - mount  \<IP Address>:/share/directory/on/server   /share/directory/on/client
 <br/>
 <br/>
 
