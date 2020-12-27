@@ -29,7 +29,7 @@ You can optionally add an NFS share server to your Cluster.  [Click Here for Mor
 
 <br/>
 
-<div sytle="background-color:black;">
+<div id="canvas-background">
 
 ```Bash
 # Clone Repo
@@ -48,7 +48,7 @@ $ mv k8s.env.example k8s.env
 ### 2. Edit the [***k8s.env***](bootstrap/k8s.env.example) file required configuration options:
 <br/>
 
-<div class="background-plane">
+<div id="canvas-background">
 
 
 ```Bash
@@ -111,7 +111,7 @@ The bootstrap_master.sh file must be run as ***sudo*** and requires one of three
 * ***reset***: tear down, clean up and reset master node
 <br/>
 
-<div class="background-plane">
+<div id="canvas-background">
 
 ```Bash
 # This process will take several minutes to run
@@ -136,7 +136,7 @@ If you want to be able to schedule Pods on the control-plane node aka master nod
 
 <br/>
 
-<div class="background-plane">
+<div id="canvas-background">
 
 ```bash
 $ kubectl taint nodes --all node-role.kubernetes.io/master-
@@ -170,7 +170,7 @@ The below command can be run to retrieve the ***kubernetes join token*** from th
 
 <br/>
 
-<div class="background-plane">
+<div id="canvas-background">
 
 ```Bash
 $ kubeadm token create --print-join-command
@@ -193,7 +193,7 @@ The bootstrap_worker.sh file must be run as ***sudo*** and requires one of three
 
 <br/>
 
-<div class="background-plane">
+<div id="canvas-background">
 
 ```Bash
 # This process will take several minutes to run
@@ -206,7 +206,7 @@ $ sudo ./bootstrap_worker.sh <test | setup | reset>
 
 If now errors occurs, we can check the master node and verify our kubernetes cluster and connected worker nodes.
 
-<div class="background-plane">
+<div id="canvas-background">
 
 ```Bash
 # Verify that all nodes are connected on the master node CLi
@@ -217,6 +217,7 @@ k8s-master           Ready    master   68d   v1.19.2
 k8s-worker-node-1    Ready    worker   1d    v1.19.2
 k8s-worker-node-2    Ready    worker   1d    v1.19.2
 ```
+
 </div>
 
 <br/>
@@ -225,3 +226,9 @@ k8s-worker-node-2    Ready    worker   1d    v1.19.2
 <br/>
 
 ---
+
+<style>
+#canvas-background {
+    background: #24292e;
+}
+</style>
