@@ -4,7 +4,6 @@
 
 # Ignore Files
 .scratch
-NFS_CONFIG.md
 config.example
 typha.yaml
 **/k8s.env
