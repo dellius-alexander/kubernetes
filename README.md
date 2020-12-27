@@ -1,3 +1,9 @@
+<style>
+    .background-plane{
+        background-color: black;
+}
+</style>
+
 # Kubernetes Installation
 
 ---
@@ -29,6 +35,8 @@ You can optionally add an NFS share server to your Cluster.  [Click Here for Mor
 
 <br/>
 
+<div class="background-plane">
+
 ```Bash
 # Clone Repo
 $ git clone https://github.com/dellius-alexander/kubernetes.git
@@ -37,10 +45,17 @@ $ cd Kubernetes/bootstrap
 $ mv k8s.env.example k8s.env
 ```
 
+</div>
+
+
+
 <br/>
 
 ### 2. Edit the [***k8s.env***](bootstrap/k8s.env.example) file required configuration options:
 <br/>
+
+<div class="background-plane">
+
 
 ```Bash
 # Use nano or vi to edit the k8s.env file <values in brackets>
@@ -89,6 +104,8 @@ __USER_AUTH__=
 "k8s.env" 0L, 0C
 ```
 
+</div>
+
 <br/>
 
 ### 3. Execute the [***bootstrap_master.sh***](bootstrap/bootstrap_master.sh) script:
@@ -100,11 +117,17 @@ The bootstrap_master.sh file must be run as ***sudo*** and requires one of three
 * ***reset***: tear down, clean up and reset master node
 <br/>
 
+<div class="background-plane">
+
 ```Bash
 # This process will take several minutes to run
 # Requires one of three parameters <test | setup | reset>
 $ sudo ./bootstrap_master.sh <test | setup | reset>
 ```
+
+</div>
+
+
 
 If no errors occurs, we will use the ***kubernetes join token***  to setup the woker node.<br/>
 The ***kubernetes join token*** should be printed upon completion of the bootstarp_master.sh script.  
@@ -119,11 +142,15 @@ If you want to be able to schedule Pods on the control-plane node aka master nod
 
 <br/>
 
+<div class="background-plane">
+
 ```bash
 $ kubectl taint nodes --all node-role.kubernetes.io/master-
 # With output looking something like:
 node/k8s-master untainted
 ```
+
+</div>
 
 <br/>
 
@@ -149,10 +176,15 @@ The below command can be run to retrieve the ***kubernetes join token*** from th
 
 <br/>
 
+<div class="background-plane">
+
 ```Bash
 $ kubeadm token create --print-join-command
-
 ```
+
+</div>
+
+
 
 <br/>
 
@@ -167,13 +199,20 @@ The bootstrap_worker.sh file must be run as ***sudo*** and requires one of three
 
 <br/>
 
+<div class="background-plane">
+
 ```Bash
 # This process will take several minutes to run
 # Requires one of three parameters <test | setup | reset>
 $ sudo ./bootstrap_worker.sh <test | setup | reset>
 ```
 
+</div>
+
+
 If now errors occurs, we can check the master node and verify our kubernetes cluster and connected worker nodes.
+
+<div class="background-plane">
 
 ```Bash
 # Verify that all nodes are connected on the master node CLi
@@ -184,6 +223,7 @@ k8s-master           Ready    master   68d   v1.19.2
 k8s-worker-node-1    Ready    worker   1d    v1.19.2
 k8s-worker-node-2    Ready    worker   1d    v1.19.2
 ```
+</div>
 
 <br/>
 
@@ -191,4 +231,3 @@ k8s-worker-node-2    Ready    worker   1d    v1.19.2
 <br/>
 
 ---
-
