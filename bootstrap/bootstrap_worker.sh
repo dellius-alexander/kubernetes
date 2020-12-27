@@ -70,7 +70,7 @@ wait $!
 #               INITIAL SETUP OF CLUSTER NODE
 ###############################################################################
 function setup() {
-get_env k8s.env.example
+get_env k8s.env
 ###############################################################################
         # Reset IP tables
 iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
