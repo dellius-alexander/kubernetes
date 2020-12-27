@@ -226,9 +226,3 @@ k8s-worker-node-2    Ready    worker   1d    v1.19.2
 <br/>
 
 ---
-
-<style>
-#canvas-background {
-    background: #24292e;
-}
-</style>
