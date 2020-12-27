@@ -108,7 +108,7 @@ The ***kubernetes join token*** should be printed upon completion of the bootsta
 
 ### 1. Retrieve the ***kubernetes join token***:
 
-The below command can be run to retrieve the ***kubernetes join token***.
+The below command can be run to retrieve the ***kubernetes join token*** from the master node.
 
 <br/>
 
