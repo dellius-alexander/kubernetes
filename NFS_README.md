@@ -295,7 +295,10 @@ If the above command returns no error, you have working NFS setup.
 
 ### Automount NFS Shares:<br/>
 
-To mount the shares automatically on every reboot, you would need to modify /etc/fstab file of your NFS client.
+To mount the shares automatically on every reboot, you would need to modify /etc/fstab file of your NFS client. [Click here for the complete list of fstab file configuration](https://man7.org/linux/man-pages/man5/fstab.5.html) or type ***man fstab*** at the CLi.
+
+* Format of /etc/fstab file configuration: 
+    - \<Device> \<Mount Point> \<File System Type> \<Options> \<Dump> \<Pass>
 <br/>
 <br/>
 
