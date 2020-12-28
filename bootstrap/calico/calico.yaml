@@ -37,7 +37,7 @@ data:
               "type": "calico-ipam",
               "assign_ipv4": "true",
               "assign_ipv6": "false",
-              "ipv4_pools": "192.168.0.0/18,192.168.0.0/19,default-ipv4-ippool"
+              "ipv4_pools": "192.168.0.0/18,192.168.0.0/19"
           },
           "policy": {
               "type": "k8s"
