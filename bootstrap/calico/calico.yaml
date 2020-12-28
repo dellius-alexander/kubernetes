@@ -2,8 +2,8 @@
 ---
 # Source: calico/templates/calico-config.yaml
 # This ConfigMap is used to configure a self-hosted Calico installation.
-kind: ConfigMap
 apiVersion: v1
+kind: ConfigMap
 metadata:
   name: calico-config
   namespace: kube-system
@@ -29,16 +29,11 @@ data:
           "type": "calico",
           "log_level": "info",
           "log_file_path": "/var/log/calico/cni/cni.log",
-          "log_file_max_size": "250",
-          "log_file_max_age": "10",
           "datastore_type": "kubernetes",
           "nodename": "__KUBERNETES_NODE_NAME__",
           "mtu": __CNI_MTU__,
           "ipam": {
-              "type": "calico-ipam",
-              "assign_ipv4": "true",
-              "assign_ipv6": "false",
-              "ipv4_pools": "192.168.0.0/18,192.168.0.0/19,default-ipv4-ippool"
+              "type": "calico-ipam"
           },
           "policy": {
               "type": "k8s"
