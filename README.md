@@ -126,6 +126,8 @@ The ***kubernetes join token*** should be printed upon completion of the bootsta
 ### 4. Single Node Cluser Configuration:
 <br/>
 
+***WARNING:*** *If you plan to run a single node cluster, you must enable this option below in order for the metrics-server to be enabled.*
+
 If you want to be able to schedule Pods on the control-plane node aka master node, run the command below:
 
 ***Note: The "bootstrap_master.sh setup" script parameter option will still write/update /etc/hosts for a three node cluster.  If you did not edit the environment file to add IP Addresses for the worker node you will need to remove these redundant entries in /etc/hosts file.***
