@@ -30,7 +30,7 @@ You can optionally add an NFS share server to your Cluster.  [Click Here for Mor
 ```Bash
 # Clone Repo
 $ git clone https://github.com/dellius-alexander/kubernetes.git
-$ cd Kubernetes/bootstrap
+$ cd Kubernetes
 # Rename k8s.env.example file to k8s.env
 $ mv k8s.env.example k8s.env
 ```
@@ -41,7 +41,7 @@ $ mv k8s.env.example k8s.env
 
 <br/>
 
-### 2. Edit the [***k8s.env***](bootstrap/k8s.env.example) file required configuration options:
+### 2. Edit the [***k8s.env***](k8s.env.example) file required configuration options:
 <br/>
 
 <div id="canvas-background">
@@ -98,7 +98,7 @@ __USER_AUTH__=
 
 <br/>
 
-### 3. Execute the [***bootstrap_master.sh***](bootstrap/bootstrap_master.sh) script:
+### 3. Execute the [***bootstrap_master.sh***](bootstrap_master.sh) script:
 <br/>
 
 The bootstrap_master.sh file must be run as ***sudo*** and requires one of three parameter options:
@@ -177,7 +177,7 @@ $ kubeadm token create --print-join-command
 
 <br/>
 
-### 2. Execute the [***bootstrap_worker.sh***](bootstrap/bootstrap_worker.sh) 
+### 2. Execute the [***bootstrap_worker.sh***](bootstrap_worker.sh) 
 
 <br/>
 
