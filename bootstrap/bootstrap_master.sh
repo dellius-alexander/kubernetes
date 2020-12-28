@@ -207,7 +207,7 @@ get_env k8s.env
     # Verify kubeadm and kubectl binary
 kube_binary
     # Reset Master Node
-${KUBEADM} reset yes
+${KUBEADM} reset
 wait $!
     # Reset IP tables
 iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
