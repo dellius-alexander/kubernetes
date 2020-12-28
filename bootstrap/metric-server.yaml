@@ -1,7 +1,3 @@
-# https://github.com/kubernetes-sigs/metrics-server/releases
-# https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.4.1/components.yaml
----
-
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -9,9 +5,7 @@ metadata:
     k8s-app: metrics-server
   name: metrics-server
   namespace: kube-system
-
 ---
-
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -31,9 +25,7 @@ rules:
   - get
   - list
   - watch
-
 ---
-
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -53,9 +45,7 @@ rules:
   - get
   - list
   - watch
-
 ---
-
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
@@ -71,9 +61,7 @@ subjects:
 - kind: ServiceAccount
   name: metrics-server
   namespace: kube-system
-
 ---
-
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -88,9 +76,7 @@ subjects:
 - kind: ServiceAccount
   name: metrics-server
   namespace: kube-system
-
 ---
-
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -105,9 +91,7 @@ subjects:
 - kind: ServiceAccount
   name: metrics-server
   namespace: kube-system
-
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -123,9 +107,7 @@ spec:
     targetPort: https
   selector:
     k8s-app: metrics-server
-
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -151,7 +133,6 @@ spec:
         - --secure-port=4443
         - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
         - --kubelet-use-node-status-port
-        - --kubelet-insecure-tls
         image: k8s.gcr.io/metrics-server/metrics-server:v0.4.1
         imagePullPolicy: IfNotPresent
         livenessProbe:
@@ -187,15 +168,13 @@ spec:
       volumes:
       - emptyDir: {}
         name: tmp-dir
-
 ---
-
 apiVersion: apiregistration.k8s.io/v1
 kind: APIService
 metadata:
   labels:
     k8s-app: metrics-server
-  name: v1.metrics.k8s.io
+  name: v1beta1.metrics.k8s.io
 spec:
   group: metrics.k8s.io
   groupPriorityMinimum: 100
@@ -203,5 +182,5 @@ spec:
   service:
     name: metrics-server
     namespace: kube-system
-  version: v1
+  version: v1beta1
   versionPriority: 100
