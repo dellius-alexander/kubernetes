@@ -30,7 +30,7 @@ You can optionally add an NFS share server to your Cluster.  [Click Here for Mor
 ```Bash
 # Clone Repo
 $ git clone https://github.com/dellius-alexander/kubernetes.git
-$ cd Kubernetes
+$ cd kubernetes
 # Rename k8s.env.example file to k8s.env
 $ mv k8s.env.example k8s.env
 ```
