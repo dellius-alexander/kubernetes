@@ -219,9 +219,9 @@ If now errors occurs, we can check the master node and verify our kubernetes clu
 $ kubectl get nodes
 # Output
 NAME                 STATUS   ROLES    AGE   VERSION
-k8s-master           Ready    master   68d   v1.19.2
-k8s-worker-node-1    Ready    worker   1d    v1.19.2
-k8s-worker-node-2    Ready    worker   1d    v1.19.2
+k8s-master           Ready    master   10m   v1.19.2
+k8s-worker-node-1    Ready    worker   2m    v1.19.2
+k8s-worker-node-2    Ready    worker   1m    v1.19.2
 ```
 
 </div>
