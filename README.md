@@ -73,7 +73,7 @@ __KUBERNETES_SERVICE_HOST__=<Master Node IP Address>
 __KUBERNETES_SERVICE_PORT__=6443
 __NODENAME__=k8s-master
 __POD_NETWORK_CIDR__=192.168.0.0/16
-__K8S_USER__=(id -u)
+__USER__=${USER}
 __USER_HOME__=~
 #
 ##### OPTIONAL CONFIGURATION #####
@@ -119,7 +119,7 @@ $ sudo ./bootstrap_master.sh <test | setup | reset>
 
 
 
-If no errors occurs, we will use the ***kubernetes join token***  to setup the woker node.<br/>
+If no errors occurs, we will need the ***kubernetes join token***  to setup the worker node.<br/>
 The ***kubernetes join token*** should be printed upon completion of the bootstarp_master.sh script.  
 <br/>
 

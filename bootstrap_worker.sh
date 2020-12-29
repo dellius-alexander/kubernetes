@@ -181,6 +181,19 @@ else
     printf "${RED}Unable to load file.  Check your input and rerun again...${NC}\n"
     exit $?
 fi
+    # Checking if environments have loaded
+echo "Master Node address: ${__MASTER_NODE__}"
+echo "Worker node 1 address: ${__WORKER_NODE_1__}"
+echo "Worker node 2 address: ${__WORKER_NODE_2__}"
+echo "Kubernetes API Address: ${__APISERVER_ADVERTISE_ADDRESS__}"
+echo "Kubernetes POD CIDR: ${__POD_NETWORK_CIDR__}"
+echo "User Home Directory: ${__USER_HOME__}"
+echo "User: ${__USER__}"
+echo "Kubernetes config file PATH: ${__KUBECONFIG__}"
+echo "Kubernetes Service Port: ${__KUBERNETES_SERVICE_PORT__}"
+echo "Calico file directory: ${__CALICO_YAML_DIRECTORY__}"
+echo "Kubeconfig directory: ${__KUBECONFIG_DIRECTORY__}"
+echo "Kubeconfig file path: ${__KUBECONFIG_FILEPATH__}"
 }
 ###############################################################################
 ###############################################################################

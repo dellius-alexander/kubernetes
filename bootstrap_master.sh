@@ -180,7 +180,7 @@ ${KUBEADM} init --apiserver-advertise-address=${__APISERVER_ADVERTISE_ADDRESS__}
     # Setup KUBECONFIG file:
 mkdir -p ${__KUBECONFIG_DIRECTORY__}/.kube
 cp -i /etc/kubernetes/admin.conf  ${__KUBECONFIG_DIRECTORY__}/config
-chown ${__K8S_USER__}:${__K8S_USER__}  ${__KUBECONFIG_DIRECTORY__}/config
+chown ${__USER__}:${__USER__}  ${__KUBECONFIG_DIRECTORY__}/config
 wait $!
 
     # Deploy Calico network
@@ -253,7 +253,7 @@ ${KUBEADM} init --apiserver-advertise-address=${__APISERVER_ADVERTISE_ADDRESS__}
     # Setup KUBECONFIG file:
 mkdir -p ${__KUBECONFIG_DIRECTORY__}/.kube
 cp -i /etc/kubernetes/admin.conf  ${__KUBECONFIG_DIRECTORY__}/config
-chown ${__K8S_USER__}:${__K8S_USER__}  ${__KUBECONFIG_DIRECTORY__}/config
+chown ${__USER__}:${__USER__}  ${__KUBECONFIG_DIRECTORY__}/config
 wait $!
 
     # Deploy Calico network
@@ -293,7 +293,7 @@ echo "Worker node 2 address: ${__WORKER_NODE_2__}"
 echo "Kubernetes API Address: ${__APISERVER_ADVERTISE_ADDRESS__}"
 echo "Kubernetes POD CIDR: ${__POD_NETWORK_CIDR__}"
 echo "User Home Directory: ${__USER_HOME__}"
-echo "User: ${__K8S_USER__}"
+echo "User: ${__USER__}"
 echo "Kubernetes config file PATH: ${__KUBECONFIG__}"
 echo "Kubernetes Service Port: ${__KUBERNETES_SERVICE_PORT__}"
 echo "Calico file directory: ${__CALICO_YAML_DIRECTORY__}"
