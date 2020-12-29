@@ -203,7 +203,7 @@ $ sudo ./bootstrap_worker.sh <test | setup | reset>
 Please enter kubeadm join token: kubeadm join 10.0.0.158:6443 --token dx98j6.freduh85iynwtx9t     --discovery-token-ca-cert-hash sha256:8445880f8e7b73a814fd468e036699e7da56505e4d61697dccf15354a387fe61
 
 Join Token Set to: kubeadm join 10.0.0.158:6443 --token dx98j6.freduh85iynwtx9t --discovery-token-ca-cert-hash sha256:8445880f8e7b73a814fd468e036699e7da56505e4d61697dccf15354a387fe61
-
+# This example was just a test...
 Test was successful...
 ```
 
