@@ -405,8 +405,7 @@ else
     echo ""
     printf "${RED}\"${in}\"${NC} is not a valid option...\n"
     printf "\nUsage: ${RED}${0} [ setup | reset | stop ]${NC}\n"
-    printf "\nNote: '${0} stop' command will teardown the node and revert \
-    node back to original state...\n"
+    printf "\nNote: \"$0 stop\" command will teardown the node and revert node back to original state...\n"
 
     if [ "${i}" == 3 ]; then
             exit 1
