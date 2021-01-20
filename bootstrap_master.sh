@@ -401,6 +401,7 @@ elif [ "${in}" == "test" ]; then
 elif [ "${in}" == "stop" ]; then
     printf "\n\n${RED}TEARING DOWN CLUSTER: ${NC}${HOSTNAME}\n\n"
     teardown
+    printf "\n\n${RED}Node: ${HOSTNAME} restored to normal...${NC}\n\n"
     exit 0
 else
     echo ""
