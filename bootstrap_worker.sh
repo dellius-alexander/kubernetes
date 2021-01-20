@@ -354,8 +354,6 @@ systemctl restart kubelet &&
 systemctl enable docker &&
 systemctl restart docker
 wait $!
-    # Exit teardown
-exit 0
 }   # END OF TEARDOWN
 ###############################################################################
 ###############################################################################
