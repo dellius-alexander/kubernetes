@@ -412,6 +412,7 @@ elif [ "${in}" == "setup" ]; then
         setup "${__JOIN_TOKEN__}"
         exit 0
 elif [ "${in}" == "stop" ]; then
+        printf "\n\n${RED}TEARING DOWN CLUSTER: ${NC}${HOSTNAME}\n\n"
         teardown
         printf "\n\n${RED}Node: ${HOSTNAME} restored to normal...${NC}\n\n"
         exit 0

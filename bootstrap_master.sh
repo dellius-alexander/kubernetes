@@ -401,6 +401,7 @@ elif [ "${in}" == "test" ]; then
 elif [ "${in}" == "stop" ]; then
     printf "\n\n${RED}TEARING DOWN CLUSTER: ${NC}${HOSTNAME}\n\n"
     teardown
+    exit 0
 else
     echo ""
     printf "${RED}\"${in}\"${NC} is not a valid option...\n"
