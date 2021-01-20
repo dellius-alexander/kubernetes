@@ -199,11 +199,11 @@ exit 0
 }   # END OF SETUP
 ###############################################################################
 ###############################################################################
-#               RESET CLUSTER
+###########################    RESET CLUSTER     ##############################
 ###############################################################################
 function reset(){
-get_env k8s.env
 ###############################################################################
+get_env k8s.env
     # Verify kubeadm and kubectl binary
 kube_binary
     # Reset Master Node
@@ -276,6 +276,53 @@ exit 0
 ###############################################################################
 ###############################################################################
 ###############################################################################
+function teardown(){
+###############################################################################
+get_env k8s.env
+    # Verify kubeadm and kubectl binary
+kube_binary
+    # Reset Master Node
+${KUBEADM} reset
+wait $!
+    # Reset IP tables
+iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
+wait $!
+    ###########################################################################
+    # Deleting contents of config directories:
+    # [/etc/kubernetes/manifests /etc/kubernetes/pki] Deleting files:
+    # [/etc/kubernetes/admin.conf /etc/kubernetes/kubelet.conf
+    # /etc/kubernetes/bootstrap-kubelet.conf /etc/kubernetes/controller-manager.conf
+    # /etc/kubernetes/scheduler.conf] Deleting contents of stateful directories:
+    # [/var/lib/etcd /var/lib/kubelet /var/lib/dockershim /var/run/kubernetes
+    # /var/lib/cni]
+rm -rf \
+/etc/kubernetes/manifests \
+/etc/kubernetes/pki \
+/etc/kubernetes/admin.conf \
+/etc/kubernetes/kubelet.conf \
+/etc/kubernetes/bootstrap-kubelet.conf \
+/etc/kubernetes/controller-manager.conf \
+/etc/kubernetes/scheduler.conf \
+/var/lib/kubelet \
+/var/lib/dockershim \
+/var/run/kubernetes \
+/var/lib/cni \
+/etc/cni/net.d \
+${__KUBECONFIG_DIRECTORY__}/config
+wait $!
+    # Restart the kubelet
+systemctl daemon-reload &&
+systemctl enable --now kubelet &&
+systemctl restart kubelet &&
+systemctl enable docker &&
+systemctl restart docker
+wait $!
+    # Exit teardown
+exit 0
+}   # END OF TEARDOWN
+###############################################################################
+###############################################################################
+###############################################################################
 function get_env(){
 ###############################################################################
 # Local .env
@@ -339,24 +386,28 @@ done
 in=$(check_env "${in}" "You entered: ")
     ## Check if command is valid
 if [ "${in}" == "reset" ]; then
-        reset
+    reset
+    exit 0
 elif [ "${in}" == "setup" ]; then
-        setup
+    setup
+    exit 0
 elif [ "${in}" == "test" ]; then
-        get_env k8s.env
-        printf "\nTest was successful...\n";        
-        exit 0
+    get_env k8s.env
+    printf "\nTest was successful...\n";        
+    exit 0
+elif [ "${in}" == "stop" ]; then
+    printf "\n\n${RED}TEARING DOWN CLUSTER: ${NC}${HOSTNAME}\n\n"
 else
-        echo ""
-        printf "${RED}\"${in}\"${NC} is not a valid option...\n";
-        printf "\nUsage: ${RED}${0} [ setup | reset ]${NC}\n";
-        printf "\nThis script will exit after two failed attempts...\n";
+    echo ""
+    printf "${RED}\"${in}\"${NC} is not a valid option...\n";
+    printf "\nUsage: ${RED}${0} [ setup | reset ]${NC}\n";
+    printf "\nThis script will exit after two failed attempts...\n";
 
-        if [ "${i}" == 3 ]; then
-                exit 1
-        fi
+    if [ "${i}" == 3 ]; then
+            exit 1
+    fi
 
-        test_input
+    test_input
 fi
 
 }
