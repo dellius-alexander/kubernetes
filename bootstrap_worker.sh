@@ -1,3 +1,4 @@
+#   #
 #!/usr/bin/env bash
 ###############################################################################
 ###############################################################################
@@ -29,7 +30,7 @@ if [[ -z ${KUBEADM} ]]; then
     printf "\n${RED}sudo $0 $*${NC}";
     exit 1
 elif [[ -z ${KUBECTL} ]]; then
-        printf "\nUnable to locate ${RED}kubelet${NC} binary. \nPlease re-run this script using the \
+    printf "\nUnable to locate ${RED}kubelet${NC} binary. \nPlease re-run this script using the \
                 ${RED}--setup${NC} flag.\n Usage:${RED} $0 [ --reset | --setup ]${NC}\n";
     printf "\n$RED}sudo $0 $*${NC}";
     exit 1
@@ -41,23 +42,23 @@ fi
 ###############################################################################
 function firewall_rules(){
 ###############################################################################
-        # Worker node(s)
-        # Protocol	Direction	Port Range	Purpose	Used By	
-        # TCP	Inbound	10250	Kubelet API	Self, Control plane	
-        # TCP	Inbound	30000-32767	NodePort Services†	All
+    # Worker node(s)
+    # Protocol	Direction	Port Range	Purpose	Used By	
+    # TCP	Inbound	10250	Kubelet API	Self, Control plane	
+    # TCP	Inbound	30000-32767	NodePort Services†	All
 
-        # For more details, see: 
-        # https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.txt
-        # Disable Firewall
-        # systemctl disable firewalld && systemctl stop firewalld
-        # Posts to be defined on the worker nodes
-        # Used by: self, Control plane
+    # For more details, see: 
+    # https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.txt
+    # Disable Firewall
+    # systemctl disable firewalld && systemctl stop firewalld
+    # Posts to be defined on the worker nodes
+    # Used by: self, Control plane
 firewall-cmd --zone=public --add-port=10250/tcp --permanent
-        # Used by: self, Control plane
+    # Used by: self, Control plane
 firewall-cmd --zone=public --add-port=30000-32767/tcp --permanent
-        # Reload firewall
+    # Reload firewall
 firewall-cmd --reload
-        # List ports
+    # List ports
 echo "Ports assignments: "
 firewall-cmd --zone=public --permanent --list-ports
 wait $!
@@ -68,10 +69,10 @@ wait $!
 function setup() {
 get_env k8s.env
 ###############################################################################
-        # Reset IP tables
+    # Reset IP tables
 iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
-        # Pre-requisites Update /etc/hosts So that we can talk to each of the
-        # nodes in the cluster
+    # Pre-requisites Update /etc/hosts So that we can talk to each of the
+    # nodes in the cluster
 cat >/etc/hosts<<EOF
 127.0.0.1 localhost
 ::1 localhost
@@ -80,21 +81,21 @@ ${WORKER_NODE_1} k8s-worker-node-1.example.com k8s-worker-node-1
 ${WORKER_NODE_2} k8s-worker-node-2.example.com k8s-worker-node-2
 EOF
 
-        # Setup firewall rules
-        # Posts to be defined on the worker nodes
-        # Run firewall function:
+    # Setup firewall rules
+    # Posts to be defined on the worker nodes
+    # Run firewall function:
 firewall_rules
 
-        # Disable swap
+    # Disable swap
 swapoff -a && sed -i '/swap/d' /etc/fstab
 wait $!
 
-        # Disable SELinux
+    # Disable SELinux
 setenforce 0
 sed -i --follow-symlinks 's/^SELINUX=enforcing/SELINUX=disabled/' /etc/sysconfig/selinux
 wait $!
 
-        # Update sysctl settings for Kubernetes networking
+    # Update sysctl settings for Kubernetes networking
 cat >>/etc/sysctl.d/kubernetes.conf<<EOF
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
@@ -102,7 +103,7 @@ EOF
 sysctl --system
 wait $!
 
-        # Install docker engine
+    # Install docker engine
 yum install -y yum-utils device-mapper-persistent-data lvm2     > /dev/null 2>&1
 yum-config-manager \
 --add-repo https://download.docker.com/linux/centos/docker-ce.repo  > /dev/null 2>&1
@@ -115,9 +116,9 @@ docker-ce-cli-19.03.13 >/dev/null 2>&1
 systemctl enable --now docker
 wait $!
 
-        # Create /etc/docker
+    # Create /etc/docker
 mkdir /etc/docker
-        # Set up the Docker daemon
+    # Set up the Docker daemon
 cat > /etc/docker/daemon.json <<EOF
 {
   "exec-opts": ["native.cgroupdriver=systemd"],
@@ -132,13 +133,13 @@ cat > /etc/docker/daemon.json <<EOF
 }
 EOF
 mkdir -p /etc/systemd/system/docker.service.d
-        # Enable & Restart Docker
+    # Enable & Restart Docker
 systemctl daemon-reload
 systemctl restart docker
 systemctl enable docker
 wait $!
 
-        # Kubernetes Setup Add yum repository
+    # Kubernetes Setup Add yum repository
 cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
 name=Kubernetes
@@ -150,17 +151,17 @@ gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cl
 exclude=kubelet kubeadm kubectl
 EOF
 
-        # Install Kubernetes components
+    # Install Kubernetes components
 yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
 wait $!
 
-        # Enable and Start kubelet service
+    # Enable and Start kubelet service
 systemctl enable --now kubelet
 systemctl start kubelet
 wait $!
 
-        #####################################################################
-        # Join node to master
+    #####################################################################
+    # Join node to master
 join "$1"
 exit 0
 }
@@ -198,7 +199,7 @@ echo "Kubeconfig file path: ${__KUBECONFIG_FILEPATH__}"
 ###############################################################################
 function check_env() {
 ###############################################################################
-        ## Check envirnoment variable
+    ## Check envirnoment variable
 if [[ -z "$1" ]]; then
         printf "\n$2 NULL\n" 1>/dev/null 2>/dev/null
         return ""
@@ -213,20 +214,20 @@ fi
 ###############################################################################
 function join(){
 ###############################################################################
-        # Join this cluster to a k8s master node
+    # Join this cluster to a k8s master node
 status=""
-        ## Just join the cluster
+    ## Just join the cluster
 if [[ -z ${__JOIN_TOKEN__} ]]; then
-        printf "\n${RED}Kubeadm join token is not set...${NC}\n"
-        test_input "join"
+    printf "\n${RED}Kubeadm join token is not set...${NC}\n"
+    test_input "join"
 else
-        echo & ${__JOIN_TOKEN__}  2>/dev/null &&
+    echo & ${__JOIN_TOKEN__}  2>/dev/null &&
 
-        wait $!
-        if [ "$?" != 0 ]; then
-                printf "\n${RED}ERROR: ${NC}Kubeadm join token return ${RED}${?}${NC}\n"
-                test_input "join"
-        fi
+    wait $!
+    if [ "$?" != 0 ]; then
+            printf "\n${RED}ERROR: ${NC}Kubeadm join token return ${RED}${?}${NC}\n"
+            test_input "join"
+    fi
 fi
 wait $!
  }      # End of join
@@ -238,34 +239,34 @@ function reset()
 {
 printf "User: ${K8S_USER} \nHome Directory: $USER_HOME\n"
 if [[ -z ${__JOIN_TOKEN__} ]]; then
-        printf "This scripts requires you set environment variable for kubernetes join token.  \
-                \nThe format for the token should be exported in the current running shell as an environment variable. \
-                Such as: \n\t${RED}export __JOIN_TOKEN__=<k8s join token> ${NC}\n";
-        printf "\tEx: \n\t ${RED}export __JOIN_TOKEN__='kubeadm join 10.0.0.129:6443 --token 6rvyd6.ej0wp9hvm7o6ybpe \
-                \n\t --discovery-token-ca-cert-hash sha256:828ce1659093eb90f310956a8b0821f381cad388fac8686af3390e55c545b053'${NC} \n"
-        printf "You may need to run the command on your master node to get the join token, like: 
-                \n\t${RED}kubeadm token create --print-join-command ${NC}\n"
-        printf "\nTry again after you set: ${RED}__JOIN_TOKEN__=<Join command token>${NC}\n\n"
-        exit 1
+    printf "This scripts requires you set environment variable for kubernetes join token.  \
+            \nThe format for the token should be exported in the current running shell as an environment variable. \
+            Such as: \n\t${RED}export __JOIN_TOKEN__=<k8s join token> ${NC}\n";
+    printf "\tEx: \n\t ${RED}export __JOIN_TOKEN__='kubeadm join 10.0.0.129:6443 --token 6rvyd6.ej0wp9hvm7o6ybpe \
+            \n\t --discovery-token-ca-cert-hash sha256:828ce1659093eb90f310956a8b0821f381cad388fac8686af3390e55c545b053'${NC} \n"
+    printf "You may need to run the command on your master node to get the join token, like: 
+            \n\t${RED}kubeadm token create --print-join-command ${NC}\n"
+    printf "\nTry again after you set: ${RED}__JOIN_TOKEN__=<Join command token>${NC}\n\n"
+    exit 1
 else
 
-        printf "${RED}Kubernetes join command set ${NC} \nSetting up working node now...\n\n"
+    printf "${RED}Kubernetes join command set ${NC} \nSetting up working node now...\n\n"
 
 fi
 
-        #####################################################################
-        # Restart Master Node
+    #####################################################################
+    # Restart Master Node
 ${KUBEADM} reset
 wait $!
-        #####################################################################
-        # Deleting contents of config directories:
-        # [/etc/kubernetes/manifests /etc/kubernetes/pki]
-        # Deleting files:
-        # [/etc/kubernetes/admin.conf
-        # /etc/kubernetes/kubelet.conf /etc/kubernetes/bootstrap-kubelet.conf
-        # /etc/kubernetes/controller-manager.conf /etc/kubernetes/scheduler.conf] Deleting contents of
-        # stateful directories: [/var/lib/etcd /var/lib/kubelet /var/lib/dockershim /var/run/kubernetes
-        # /var/lib/cni]
+    #####################################################################
+    # Deleting contents of config directories:
+    # [/etc/kubernetes/manifests /etc/kubernetes/pki]
+    # Deleting files:
+    # [/etc/kubernetes/admin.conf
+    # /etc/kubernetes/kubelet.conf /etc/kubernetes/bootstrap-kubelet.conf
+    # /etc/kubernetes/controller-manager.conf /etc/kubernetes/scheduler.conf] Deleting contents of
+    # stateful directories: [/var/lib/etcd /var/lib/kubelet /var/lib/dockershim /var/run/kubernetes
+    # /var/lib/cni]
 rm -rf \
 /etc/kubernetes/manifests \
 /etc/kubernetes/pki \
@@ -281,34 +282,34 @@ rm -rf \
 /etc/cni/net.d \
 ~/.kube/config
 wait $!
-        # The reset process does not reset or clean up iptables rules or IPVS tables.
-        # If you wish to reset iptables, you must do so manually by using the "iptables" command.
-        # If your cluster was setup to utilize IPVS, run ipvsadm --clear (or similar)
-        # to reset your system's IPVS tables.
-        #####################################################################
+    # The reset process does not reset or clean up iptables rules or IPVS tables.
+    # If you wish to reset iptables, you must do so manually by using the "iptables" command.
+    # If your cluster was setup to utilize IPVS, run ipvsadm --clear (or similar)
+    # to reset your system's IPVS tables.
+    #####################################################################
 /usr/sbin/ipvsadm --clear
 wait $!
-        #####################################################################
-        # Posts to be defined on the worker nodes
-        # Used by: Self, Control plane
+    #####################################################################
+    # Posts to be defined on the worker nodes
+    # Used by: Self, Control plane
 firewall-cmd --zone=public --add-port=10250/tcp --permanent
-        # Used by: All
+    # Used by: All
 firewall-cmd --zone=public --add-port=30000-32767/tcp --permanent
 firewall-cmd --reload
 wait $!
-        #####################################################################
-        # Restart the kubelet
+    #####################################################################
+    # Restart the kubelet
 systemctl enable kubelet
 systemctl restart kubelet
 systemctl daemon-reload
 systemctl restart docker
 systemctl enable docker
 wait $!
-        #####################################################################
-        # Join node to master
+    #####################################################################
+    # Join node to master
 join "$1"
 exit 0
-}       # End of reset
+}   # End of reset
 ###############################################################################
 ###############################################################################
 ###########################       TEARDOWN      ###############################
@@ -363,11 +364,11 @@ function check_env(){
 ###############################################################################
 ## Check envirnoment variable
 if [[ -z "$1" ]]; then
-        printf "\n$2 NULL\n" 1>/dev/null 2>/dev/null
-        return ""
+    printf "\n$2 NULL\n" 1>/dev/null 2>/dev/null
+    return ""
 else
-        printf "\n$2 $1\n" 1>/dev/null 2>/dev/null
-        echo "$1"
+    printf "\n$2 $1\n" 1>/dev/null 2>/dev/null
+    echo "$1"
 fi
 exit 0
 }
@@ -382,56 +383,60 @@ i=0
 in="$1"
 while [[ "$in" != "test" && "$in" != "setup" && "$in" != "reset" && "$in" != "join" && -z "${in}" ]];
 do
-        printf "\nInitial Usage:${RED} $0  [ setup | reset | join | stop ]${NC}\n";
-        printf "\nEnter a task parameter => ${RED}[ setup | reset | join | stop ]${NC} \
-to setup, reset, join or teardown the worker node: ";
-in=$(read v && echo ${v})
-sleep 0.5
+    printf "\nInitial Usage:${RED} $0  [ setup | reset | join | stop ]${NC}\n";
+    printf "\nEnter a task parameter => ${RED}[ setup | reset | join | stop ]${NC} \
+    to setup, reset, join or teardown the worker node: ";
+    in=$(read v && echo ${v})
+    sleep 1
+    ((i++))
+    if [[ "${i}" == 3 ]]; then
+            exit 1
+    fi
 done
         ## Check the input command
 in=$(check_env "${in}" "You entered: ")
         ## Check if command is valid
 if [ "${in}" == "reset" ]; then
-        declare -x __JOIN_TOKEN__=$(read -p 'Please enter kubeadm join token: ' v && echo $v)
-        declare -x __JOIN_TOKEN__=$(check_env "${__JOIN_TOKEN__}" "You Entered: ")
-        printf "\nJoin Token Set to: ${__JOIN_TOKEN__}\n"
-        reset "${__JOIN_TOKEN__}"
-        exit 0
+    declare -x __JOIN_TOKEN__=$(read -p 'Please enter kubeadm join token: ' v && echo $v)
+    declare -x __JOIN_TOKEN__=$(check_env "${__JOIN_TOKEN__}" "You Entered: ")
+    printf "\nJoin Token Set to: ${__JOIN_TOKEN__}\n"
+    reset "${__JOIN_TOKEN__}"
+    exit 0
 elif [ "${in}" == "join" ]; then
-        declare -x __JOIN_TOKEN__=$(read -p 'Please enter kubeadm join token: ' v && echo $v)
-        declare -x __JOIN_TOKEN__=$(check_env "${__JOIN_TOKEN__}" "You Entered: ")
-        printf "\nJoin Token Set to: ${__JOIN_TOKEN__}\n"
-        join "${__JOIN_TOKEN__}"
-        exit 0
+    declare -x __JOIN_TOKEN__=$(read -p 'Please enter kubeadm join token: ' v && echo $v)
+    declare -x __JOIN_TOKEN__=$(check_env "${__JOIN_TOKEN__}" "You Entered: ")
+    printf "\nJoin Token Set to: ${__JOIN_TOKEN__}\n"
+    join "${__JOIN_TOKEN__}"
+    exit 0
 elif [ "${in}" == "setup" ]; then
-        declare -x __JOIN_TOKEN__=$(read -p 'Please enter kubeadm join token: ' v && echo $v)
-        declare -x __JOIN_TOKEN__=$(check_env "${__JOIN_TOKEN__}" "You Entered: ")
-        printf "\nJoin Token Set to: ${__JOIN_TOKEN__}\n"
-        setup "${__JOIN_TOKEN__}"
+    declare -x __JOIN_TOKEN__=$(read -p 'Please enter kubeadm join token: ' v && echo $v)
+    declare -x __JOIN_TOKEN__=$(check_env "${__JOIN_TOKEN__}" "You Entered: ")
+    printf "\nJoin Token Set to: ${__JOIN_TOKEN__}\n"
+    setup "${__JOIN_TOKEN__}"
         exit 0
 elif [ "${in}" == "stop" ]; then
-        printf "\n\n${RED}TEARING DOWN CLUSTER: ${NC}${HOSTNAME}\n\n"
-        teardown
-        printf "\n\n${RED}Node: ${HOSTNAME} restored to normal...${NC}\n\n"
-        exit 0
+    printf "\n\n${RED}TEARING DOWN CLUSTER: ${NC}${HOSTNAME}\n\n"
+    teardown
+    printf "\n\n${RED}Node: ${HOSTNAME} restored to normal...${NC}\n\n"
+    exit 0
 elif [ "${in}" == "test" ]; then
-        declare -x __JOIN_TOKEN__=$(read -p 'Please enter kubeadm join token: ' v && echo $v)
-        declare -x __JOIN_TOKEN__=$(check_env "${__JOIN_TOKEN__}" "You entered: ")
-        printf "\nJoin Token Set to: ${__JOIN_TOKEN__}\n"
-        get_env k8s.env
-        printf "\nTest was successful...\n";        
-        exit 0
+    declare -x __JOIN_TOKEN__=$(read -p 'Please enter kubeadm join token: ' v && echo $v)
+    declare -x __JOIN_TOKEN__=$(check_env "${__JOIN_TOKEN__}" "You entered: ")
+    printf "\nJoin Token Set to: ${__JOIN_TOKEN__}\n"
+    get_env k8s.env
+    printf "\nTest was successful...\n";        
+    exit 0
 else        
-        printf "\n\n${RED}\"${in}\"${NC} is not a valid option...\n";
-        printf "\nUsage: ${RED}${0} [ setup | reset | join | stop ]${NC}\n"
-        printf "\nNote: \"$0 stop\" command will teardown the node and revert node back to original state...\n"
+    printf "\n\n${RED}\"${in}\"${NC} is not a valid option...\n";
+    printf "\nUsage: ${RED}${0} [ setup | reset | join | stop ]${NC}\n"
+    printf "\nNote: \"$0 stop\" command will teardown the node and revert node back to original state...\n"
 
 
-        if [[ $i == 2 ]]; then
-                exit 0
-        fi
-        ((i++))
-        test_input
+    if [[ $i == 2 ]]; then
+            exit 0
+    fi
+    ((i++))
+    test_input
 fi
 }
 ###############################################################################
