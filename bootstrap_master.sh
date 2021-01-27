@@ -373,8 +373,8 @@ i=0
 in="$1"
 while [[ "${in}" != "reset" && "${in}" != "setup" && -z "${in}" ]];
 do
-        printf "\nInitial Usage:${RED} $0 [ reset | setup ]${NC}\n";
-        printf "\nEnter a task parameter => ${RED} $0 [ reset | setup ]${NC} to reset or setup master node: ";
+        printf "\nInitial Usage:${RED} $0 [ setup | reset | stop ]${NC}\n";
+        printf "\nEnter a task parameter => ${RED} $0 [ reset | setup | stop ]${NC} to  setup, reset or teardown the master node.";
         in=$(read v && echo ${v})
         sleep 1
         ((i++))
