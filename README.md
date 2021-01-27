@@ -102,9 +102,11 @@ __USER_AUTH__=
 <br/>
 
 The bootstrap_master.sh file must be run as ***sudo*** and requires one of three parameter options:
-* ***test***: dry run test for environment file
-* ***setup***: first time setup of master node
-* ***reset***: tear down, clean up and reset master node
+* ***test***: dry run test for environment file.
+* ***setup***: first time setup of master node.
+* ***reset***: tear down, clean up and setup master node again.
+* ***stop***: tear down and clean up node; returning the node back to original state.
+
 <br/>
 
 <div id="canvas-background">
@@ -112,7 +114,8 @@ The bootstrap_master.sh file must be run as ***sudo*** and requires one of three
 ```Bash
 # This process will take several minutes to run
 # Requires one of three parameters <test | setup | reset>
-$ sudo ./bootstrap_master.sh <test | setup | reset>
+$ sudo ./bootstrap_master.sh <test | setup | reset | stop>
+[sudo] password for k8s_user:
 ```
 
 </div>
@@ -184,9 +187,10 @@ kubeadm join 10.0.0.158:6443 --token dx98j6.freduh85iynwtx9t     --discovery-tok
 <br/>
 
 The bootstrap_worker.sh file must be run as ***sudo*** and requires one of three parameter options:
-* ***test***: dry run test for environment file
-* ***setup***: first time setup of master node
-* ***reset***: tear down, clean up and reset master node
+* ***test***: dry run test for environment file.
+* ***setup***: first time setup of master node.
+* ***reset***: tear down, clean up and reset master node.
+* ***stop***: tear down and clean up node; returning the node back to original state.
 
 Enter the ***Join Token*** when prompted. The below example is just a dry run test. In a real attempt you will use eiter ***setup or reset***.
 
@@ -197,7 +201,7 @@ Enter the ***Join Token*** when prompted. The below example is just a dry run te
 ```Bash
 # This process will take several minutes to run
 # Requires one of three parameters <test | setup | reset>
-$ sudo ./bootstrap_worker.sh <test | setup | reset>
+$ sudo ./bootstrap_worker.sh <test | setup | reset | stop>
 [sudo] password for k8s_user:
 # Paste the above join token when prompted
 Please enter kubeadm join token: kubeadm join 10.0.0.158:6443 --token dx98j6.freduh85iynwtx9t     --discovery-token-ca-cert-hash sha256:8445880f8e7b73a814fd468e036699e7da56505e4d61697dccf15354a387fe61
