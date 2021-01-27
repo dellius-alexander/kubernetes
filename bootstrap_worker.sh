@@ -384,8 +384,8 @@ in="$1"
 while [[ "$in" != "test" && "$in" != "setup" && "$in" != "reset" && "$in" != "join" && -z "${in}" ]];
 do
     printf "\nInitial Usage:${RED} $0  [ setup | reset | join | stop ]${NC}\n";
-    printf "\nEnter a task parameter => ${RED}[ setup | reset | join | stop ]${NC} \
-    to setup, reset, join or teardown the worker node: ";
+    printf "\nEnter a task parameter => ${RED}[ setup | reset | join | stop ]${NC} to \
+setup, reset, join or teardown the worker node: ";
     in=$(read v && echo ${v})
     sleep 1
     ((i++))
