@@ -333,7 +333,7 @@ else
     printf "${RED}Unable to load file. Check your input and rerun again...${NC}\n"
     exit $?
 fi
-    # Checking if environments have loaded
+    # Checking if environment variables have loaded
 echo "Master Node address: ${__MASTER_NODE__}"
 echo "Worker node 1 address: ${__WORKER_NODE_1__}"
 echo "Worker node 2 address: ${__WORKER_NODE_2__}"
