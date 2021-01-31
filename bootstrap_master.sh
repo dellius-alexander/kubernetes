@@ -67,9 +67,10 @@ firewall-cmd --zone=public --add-port=5473/tcp --permanent
     # Reload firewall
 firewall-cmd --reload
     # List ports
-    
-echo "Ports assignments: "
+wait $!
+printf "\n${RED}Ports assignments: ${NC}\n"
 firewall-cmd --zone=public --permanent --list-ports
+printf "\n\n"
 sleep 3
 wait $!
 }   # End of firewall_rules

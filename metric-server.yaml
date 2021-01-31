@@ -108,9 +108,11 @@ spec:
     targetPort: https
   selector:
     k8s-app: metrics-server
+
 ---
+
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   labels:
     k8s-app: metrics-server
@@ -120,23 +122,31 @@ spec:
   selector:
     matchLabels:
       k8s-app: metrics-server
-  strategy:
-    rollingUpdate:
-      maxUnavailable: 0
+  # strategy:
+  #   rollingUpdate:
+  #     maxUnavailable: 0
   template:
     metadata:
       labels:
         k8s-app: metrics-server
     spec:
       containers:
-      - args:
+      - name: metrics-server
+        image: k8s.gcr.io/metrics-server/metrics-server:v0.4.1
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:  
+            cpu: 500m
+            memory: 2048Mi
+        args:
         - --kubelet-insecure-tls 
         - --cert-dir=/tmp
         - --secure-port=4443
         - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
         - --kubelet-use-node-status-port
-        image: k8s.gcr.io/metrics-server/metrics-server:v0.4.1
-        imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 3
           httpGet:
@@ -144,7 +154,6 @@ spec:
             port: https
             scheme: HTTPS
           periodSeconds: 10
-        name: metrics-server
         ports:
         - containerPort: 4443
           name: https
@@ -170,7 +179,9 @@ spec:
       volumes:
       - emptyDir: {}
         name: tmp-dir
+
 ---
+
 apiVersion: apiregistration.k8s.io/v1
 kind: APIService
 metadata:
