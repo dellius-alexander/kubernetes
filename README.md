@@ -12,6 +12,9 @@
    
 You can optionally add an NFS share server to your Cluster.  [Click Here for More Details](NFS_README.md)
     
+### See [Kubernetes Command Reference](https://github.com/dellius-alexander/k8s-yaml-template/blob/master/k8s-commands/cheatsheet.md) for a list of commands
+---
+
 ***Note: Kubernetes setup for Bare Metal configuration of minimal CentOS 7 / RHEL 7 machines.***
 
 ---
