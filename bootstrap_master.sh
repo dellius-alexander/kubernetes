@@ -80,7 +80,7 @@ wait $!
 #####################    INITIAL SETUP OF CLUSTER NODE    #####################
 ###############################################################################
 function setup() {
-get_env k8s.env
+./get_env.sh k8s.env
 ###############################################################################
     # Reset IP tables
 iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
@@ -124,27 +124,19 @@ wait $!
 
 yum update -y && yum install -y \
 containerd.io-1.3.7 \
-docker-ce-19.03.13 \
-docker-ce-cli-19.03.13 >/dev/null 2>&1
+docker-ce-${__DOCKER_VERS__} \
+docker-ce-cli-${__DOCKER_VERS__} >/dev/null 2>&1
 systemctl enable --now docker
 wait $!
 
+if [ ! -d "/etc/docker/" ]; then
     # Create /etc/docker
-mkdir /etc/docker
+    mkdir /etc/docker
+fi
     # Set up the Docker daemon
-cat > /etc/docker/daemon.json <<EOF
-{
-  "exec-opts": ["native.cgroupdriver=systemd"],
-  "log-driver": "json-file",
-  "log-opts": {
-    "max-size": "250m"
-  },
-  "storage-driver": "overlay2",
-  "storage-opts": [
-    "overlay2.override_kernel_check=true"
-  ]
-}
-EOF
+cat daemon.json > /etc/docker/daemon.json 
+
+    # Create docker service
 mkdir -p /etc/systemd/system/docker.service.d
     # Enable & Restart Docker
 systemctl daemon-reload
@@ -211,7 +203,7 @@ exit 0
 ###############################################################################
 function reset(){
 ###############################################################################
-get_env k8s.env
+./get_env.sh k8s.env
     # Verify kubeadm and kubectl binary
 kube_binary
     # Reset Master Node
@@ -289,7 +281,7 @@ exit 0
 ###############################################################################
 function teardown(){
 ###############################################################################
-get_env k8s.env
+./get_env.sh k8s.env
     # Verify kubeadm and kubectl binary
 kube_binary
     # Reset Master Node
@@ -403,7 +395,7 @@ elif [ "${in}" == "setup" ]; then
     setup
     exit 0
 elif [ "${in}" == "test" ]; then
-    get_env k8s.env
+    ./get_env.sh k8s.env
     printf "\nTest was successful...\n";        
     exit 0
 elif [ "${in}" == "stop" ]; then

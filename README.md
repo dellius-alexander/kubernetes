@@ -22,7 +22,7 @@ You can optionally add an NFS share server to your Cluster.  [Click Here for Mor
 
 ## <h2 id="Master_Node">On Master</h2>
 
-<br/>
+<hr/>
 
 ### 1. Clone Repo and Edit k8s.env.example File:
 
@@ -43,6 +43,7 @@ $ mv k8s.env.example k8s.env
 
 
 <br/>
+<hr/>
 
 ### 2. Edit the [***k8s.env***](k8s.env.example) file required configuration options:
 <br/>
@@ -99,8 +100,43 @@ __USER_AUTH__=
 </div>
 
 <br/>
+<hr/>
 
-### 3. Execute the [***bootstrap_master.sh***](bootstrap_master.sh) script:
+### 3. Docker Daemon.json file
+<br/>
+The --config-file option allows you to set any configuration option for the daemon in a JSON format. This file uses the same flag names as keys, except for flags that allow several entries, where it uses the plural of the flag name, e.g., labels for the label flag.
+
+The options set in the configuration file must not conflict with options set via flags. The docker daemon fails to start if an option is duplicated between the file and the flags, regardless their value. We do this to avoid silently ignore changes introduced in configuration reloads. For example, the daemon fails to start if you set daemon labels in the configuration file and also set daemon labels via the --label flag. Options that are not present in the file are ignored when the daemon starts.
+
+### On Linux
+
+The default location of the configuration file on Linux is /etc/docker/daemon.json. The --config-file flag can be used to specify a non-default location.
+
+See [Daemon Configuration file](https://docs.docker.com/engine/reference/commandline/dockerd/#daemon-configuration-file) for full list of configuration options. This implementation will employ the below docker daemon configuration options.
+
+<br/>
+
+```json
+// Daemon configuration file
+{
+    "exec-opts": ["native.cgroupdriver=systemd"],
+    "log-driver": "json-file",
+    "log-opts": {
+      "max-size": "250m"
+    },
+    "storage-driver": "overlay2",
+    "storage-opts": [
+      "overlay2.override_kernel_check=true"
+    ],
+    "selinux-enabled": false
+  }
+
+```
+
+
+<hr/>
+
+### 4. Execute the [***bootstrap_master.sh***](bootstrap_master.sh) script:
 <br/>
 
 The bootstrap_master.sh file must be run as ***sudo*** and requires one of three parameter options:
@@ -127,8 +163,9 @@ $ sudo ./bootstrap_master.sh <test | setup | reset | stop>
 If no errors occurs, we will need the ***kubernetes join token***  to setup the worker node.<br/>
 The ***kubernetes join token*** should be printed upon completion of the bootstarp_master.sh script.  
 <br/>
+<hr/>
 
-### 4. Single Node Cluser Configuration:
+### 5. Single Node Cluser Configuration:
 <br/>
 
 ***WARNING:*** *If you plan to run a single node cluster, you must enable this option below in order for the metrics-server to be enabled.*

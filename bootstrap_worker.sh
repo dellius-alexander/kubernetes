@@ -66,7 +66,7 @@ wait $!
 ###############################################################################
 ####################    INITIAL SETUP OF CLUSTER NODE     ##################### ###############################################################################
 function setup() {
-get_env k8s.env
+./get_env.sh k8s.env
 ###############################################################################
     # Reset IP tables
 iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
@@ -110,8 +110,8 @@ wait $!
 
 yum update -y && yum install -y \
 containerd.io-1.3.7 \
-docker-ce-19.03.13 \
-docker-ce-cli-19.03.13 >/dev/null 2>&1
+docker-ce-${__DOCKER_VERS__} \
+docker-ce-cli-${__DOCKER_VERS__} >/dev/null 2>&1
 systemctl enable --now docker
 wait $!
 
@@ -306,7 +306,7 @@ exit 0
 ###############################################################################
 function teardown(){
 ###############################################################################
-get_env k8s.env
+./get_env.sh k8s.env
     # Verify kubeadm and kubectl binary
 kube_binary
     # Reset Master Node
@@ -413,7 +413,7 @@ elif [ "${in}" == "test" ]; then
     declare -x __JOIN_TOKEN__=$(read -p 'Please enter kubeadm join token: ' v && echo $v)
     declare -x __JOIN_TOKEN__=$(check_env "${__JOIN_TOKEN__}" "You entered: ")
     printf "\nJoin Token Set to: ${__JOIN_TOKEN__}\n"
-    get_env k8s.env
+    ./get_env.sh k8s.env
     printf "\nTest was successful...\n";        
     exit 0
 else        
