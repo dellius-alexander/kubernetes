@@ -61,7 +61,7 @@ firewall-cmd --reload
 echo "Ports assignments: "
 firewall-cmd --zone=public --permanent --list-ports
 wait $!
-}       # End of firewall_rules
+}   # End of firewall_rules
 ###############################################################################
 ###############################################################################
 ####################    INITIAL SETUP OF CLUSTER NODE     ##################### ###############################################################################
@@ -115,22 +115,14 @@ docker-ce-cli-19.03.13 >/dev/null 2>&1
 systemctl enable --now docker
 wait $!
 
+if [ ! -d "/etc/docker/" ]; then
     # Create /etc/docker
-mkdir /etc/docker
+    mkdir /etc/docker
+fi
     # Set up the Docker daemon
-cat > /etc/docker/daemon.json <<EOF
-{
-  "exec-opts": ["native.cgroupdriver=systemd"],
-  "log-driver": "json-file",
-  "log-opts": {
-    "max-size": "250m"
-  },
-  "storage-driver": "overlay2",
-  "storage-opts": [
-    "overlay2.override_kernel_check=true"
-  ]
-}
-EOF
+cat daemon.json > /etc/docker/daemon.json 
+
+    # Create docker service
 mkdir -p /etc/systemd/system/docker.service.d
     # Enable & Restart Docker
 systemctl daemon-reload
