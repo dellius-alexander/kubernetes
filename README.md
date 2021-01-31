@@ -102,17 +102,29 @@ __USER_AUTH__=
 <br/>
 <hr/>
 
-### 3. Docker Daemon.json file
+### 3. Docker Daemon Configuration
 <br/>
-The --config-file option allows you to set any configuration option for the daemon in a JSON format. This file uses the same flag names as keys, except for flags that allow several entries, where it uses the plural of the flag name, e.g., labels for the label flag.
 
-The options set in the configuration file must not conflict with options set via flags. The docker daemon fails to start if an option is duplicated between the file and the flags, regardless their value. We do this to avoid silently ignore changes introduced in configuration reloads. For example, the daemon fails to start if you set daemon labels in the configuration file and also set daemon labels via the --label flag. Options that are not present in the file are ignored when the daemon starts.
+You need to install a container runtime into each node in the cluster so that Pods can run there. We will be using `Docker` as the [Container runtimes](https://kubernetes.io/docs/setup/production-environment/container-runtimes/) for our kubernetes cluster.  Docker also offers configuration options for your container runtime.
+
+There are two ways to configure the Docker daemon:
+
+* Use a JSON configuration file. This is the preferred option, since it keeps all configurations in a single place.
+* Use flags when starting `dockerd`.
+
+You can use both of these options together as long as you don’t specify the same option both as a flag and in the JSON file. If that happens, the Docker daemon won’t start and prints an error message.
+
+To configure the Docker daemon using a JSON file, create a file at `/etc/docker/daemon.json` on Linux systems, or `C:\ProgramData\docker\config\daemon.json` on Windows. On MacOS go to the whale in the taskbar > Preferences > Daemon > Advanced.
 
 ### On Linux
 
 The default location of the configuration file on Linux is /etc/docker/daemon.json. The --config-file flag can be used to specify a non-default location.
 
 See [Daemon Configuration file](https://docs.docker.com/engine/reference/commandline/dockerd/#daemon-configuration-file) for full list of configuration options. This implementation will employ the below docker daemon configuration options.
+
+***Note: You can modify the `daemon.json` configuration file, to add or edit docker daemon configuration options.***
+
+For more details read: [Container runtimes](https://kubernetes.io/docs/setup/production-environment/container-runtimes/)
 
 <br/>
 
