@@ -103,6 +103,8 @@ __USER_AUTH__=
 <hr/>
 
 ### 3. Docker Daemon Configuration
+
+<div id="canvas-background">
 <br/>
 
 You need to install a container runtime into each node in the cluster so that Pods can run there. We will be using `Docker` as the [Container runtimes](https://kubernetes.io/docs/setup/production-environment/container-runtimes/) for our kubernetes cluster.  Docker also offers configuration options for your container runtime.
@@ -145,8 +147,9 @@ For more details read: [Container runtimes](https://kubernetes.io/docs/setup/pro
 
 ```
 
-
 <hr/>
+
+</div>
 
 ### 4. Execute the [***bootstrap_master.sh***](bootstrap_master.sh) script:
 <br/>

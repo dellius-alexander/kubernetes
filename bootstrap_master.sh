@@ -80,7 +80,7 @@ wait $!
 #####################    INITIAL SETUP OF CLUSTER NODE    #####################
 ###############################################################################
 function setup() {
-./get_env.sh k8s.env
+get_env k8s.env
 ###############################################################################
     # Reset IP tables
 iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
@@ -203,7 +203,7 @@ exit 0
 ###############################################################################
 function reset(){
 ###############################################################################
-./get_env.sh k8s.env
+get_env k8s.env
     # Verify kubeadm and kubectl binary
 kube_binary
     # Reset Master Node
@@ -281,7 +281,7 @@ exit 0
 ###############################################################################
 function teardown(){
 ###############################################################################
-./get_env.sh k8s.env
+get_env k8s.env
     # Verify kubeadm and kubectl binary
 kube_binary
     # Reset Master Node
@@ -395,7 +395,7 @@ elif [ "${in}" == "setup" ]; then
     setup
     exit 0
 elif [ "${in}" == "test" ]; then
-    ./get_env.sh k8s.env
+    get_env k8s.env
     printf "\nTest was successful...\n";        
     exit 0
 elif [ "${in}" == "stop" ]; then
