@@ -261,11 +261,13 @@ wait $!
     # Deploy Calico network
     # Source: https://docs.projectcalico.org/manifests/calico.yaml
     # Modify the config map as needed:
+printf "\n\n${RED}--Deploying Calico Networking...${NC}\n\n"
 ${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  create -f $(find ~+ -type f -name 'calico.yaml')
 #${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  create -f https://docs.projectcalico.org/manifests/calico.yaml
 wait $!
 
     # Metric Server
+printf "\n\n${RED}--Deploying Metric Server Daemonset...${NC}\n\n"
 ${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  apply -f $(find ~+ -type f -name 'metric-server.yaml')
 wait $!
 
