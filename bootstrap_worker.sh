@@ -189,7 +189,6 @@ echo "User Home Directory: ${__USER_HOME__}"
 echo "User: ${__USER__}"
 echo "Kubernetes config file PATH: ${__KUBECONFIG__}"
 echo "Kubernetes Service Port: ${__KUBERNETES_SERVICE_PORT__}"
-echo "Calico file directory: ${__CALICO_YAML_DIRECTORY__}"
 echo "Kubeconfig directory: ${__KUBECONFIG_DIRECTORY__}"
 echo "Kubeconfig file path: ${__KUBECONFIG_FILEPATH__}"
 }       # End of get_env
