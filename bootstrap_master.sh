@@ -18,6 +18,47 @@ if [[ $UID != 0 ]]; then
 fi
 ###############################################################################
 ###############################################################################
+########################    GET ENVIRONMENT FILE    ###########################
+###############################################################################
+function get_env(){
+###############################################################################
+# Local .env
+if [ -f $1 ]; then
+    # Load Environment Variables
+    export $(cat $1 | grep -v '#' | awk '/=/ {print $1}')
+else
+    printf "${RED}Unable to load file. Check your input and rerun again...${NC}\n"
+    exit $?
+fi
+    # Checking if environment variables have loaded
+echo "Master Node address: ${__MASTER_NODE__}"
+echo "Worker node 1 address: ${__WORKER_NODE_1__}"
+echo "Worker node 2 address: ${__WORKER_NODE_2__}"
+echo "Kubernetes API Address: ${__APISERVER_ADVERTISE_ADDRESS__}"
+echo "Kubernetes POD CIDR: ${__POD_NETWORK_CIDR__}"
+echo "User Home Directory: ${__USER_HOME__}"
+echo "User: ${__USER__}"
+echo "Kubernetes config file PATH: ${__KUBECONFIG__}"
+echo "Kubernetes Service Port: ${__KUBERNETES_SERVICE_PORT__}"
+echo "Kubeconfig directory: ${__KUBECONFIG_DIRECTORY__}"
+echo "Kubeconfig file path: ${__KUBECONFIG_FILEPATH__}"
+}   # End of get_env
+###############################################################################
+###############################################################################
+#####################     CHECK ENVIRONMENT VARIABLE      #####################
+###############################################################################
+function check_env() {
+###############################################################################
+        ## Check envirnoment variable
+if [[ -z "$1" ]]; then
+        printf "\n$2 NULL\n" 1>/dev/null 2>/dev/null
+        return ""
+else
+        printf "\n$2 $1\n" 1>/dev/null 2>/dev/null
+        echo "$1"
+fi
+}   # End of check_env
+###############################################################################
 ###############################################################################
 ################     VERIFY KUBEADM AND KUBECTL BINARIES     ##################
 ###############################################################################
@@ -33,7 +74,6 @@ elif [[ -z ${KUBECTL} ]]; then
     exit 1
 fi
 }   # End of kube_binary check
-###############################################################################
 ###############################################################################
 ###############################################################################
 #########################    SETUP FIREWALL RULES    ##########################
@@ -75,6 +115,86 @@ sleep 3
 wait $!
 }   # End of firewall_rules
 ###############################################################################
+###############################################################################
+#####################    INITIALIZE CLUSTER COMPONENTS    #####################
+###############################################################################
+function init_cluster() {
+###############################################################################
+    # On kmaster
+    # Initialize Kubernetes Cluster
+${KUBEADM} init --apiserver-advertise-address=${__APISERVER_ADVERTISE_ADDRESS__} \
+--pod-network-cidr=${__POD_NETWORK_CIDR__}
+
+    # Setup KUBECONFIG file:
+mkdir -p ${__KUBECONFIG_DIRECTORY__}
+cp -i /etc/kubernetes/admin.conf  ${__KUBECONFIG_DIRECTORY__}/config
+chown ${__USER__}:${__USER__}  ${__KUBECONFIG_DIRECTORY__}/config
+wait $!
+
+    # Deploy Calico network
+    # Source: https://docs.projectcalico.org/v3.14/manifests/calico.yaml
+    # Modify the config map as needed:
+printf "\n\n${RED}--Deploying Calico Networking...${NC}\n\n"
+${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  create -f $(find ~+ -type f -name 'calico.yaml')
+#${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  create -f https://docs.projectcalico.org/manifests/calico.yaml
+wait $!
+
+    # Metric Server
+printf "\n\n${RED}--Deploying Metric Server Daemonset...${NC}\n\n"
+${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  apply -f $(find ~+ -type f -name 'metric-server.yaml')
+wait $!
+
+    # Cluster join command
+printf "\n\n${RED}--Printing join token...${NC}\n\n"
+${KUBEADM} token create --print-join-command
+wait $!
+
+}     # End of init_cluster
+###############################################################################
+###############################################################################
+#########################     TEARDOWN CLUSTER     ############################
+###############################################################################
+function __teardown__(){
+###############################################################################
+get_env k8s.env
+    # Verify kubeadm and kubectl binary
+kube_binary
+    # Reset Master Node
+${KUBEADM} reset
+wait $!
+    # Reset IP tables
+iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
+wait $!
+    ###########################################################################
+    # Deleting contents of config directories:
+    # [/etc/kubernetes/manifests /etc/kubernetes/pki] Deleting files:
+    # [/etc/kubernetes/admin.conf /etc/kubernetes/kubelet.conf
+    # /etc/kubernetes/bootstrap-kubelet.conf /etc/kubernetes/controller-manager.conf
+    # /etc/kubernetes/scheduler.conf] Deleting contents of stateful directories:
+    # [/var/lib/etcd /var/lib/kubelet /var/lib/dockershim /var/run/kubernetes
+    # /var/lib/cni]
+rm -rf \
+/etc/kubernetes/manifests \
+/etc/kubernetes/pki \
+/etc/kubernetes/admin.conf \
+/etc/kubernetes/kubelet.conf \
+/etc/kubernetes/bootstrap-kubelet.conf \
+/etc/kubernetes/controller-manager.conf \
+/etc/kubernetes/scheduler.conf \
+/var/lib/kubelet \
+/var/lib/dockershim \
+/var/run/kubernetes \
+/var/lib/cni \
+/etc/cni/net.d \
+${__KUBECONFIG_DIRECTORY__}/config
+wait $!
+    # Restart the kubelet
+systemctl daemon-reload &&
+systemctl stop kubelet &&
+systemctl enable docker &&
+systemctl restart docker
+wait $!
+}   # END OF TEARDOWN
 ###############################################################################
 ###############################################################################
 #####################    INITIAL SETUP OF CLUSTER NODE    #####################
@@ -166,35 +286,9 @@ systemctl enable --now kubelet
 systemctl start kubelet
 wait $!
 
-    # On kmaster
-    # Initialize Kubernetes Cluster
-${KUBEADM} init --apiserver-advertise-address=${__APISERVER_ADVERTISE_ADDRESS__} \
---pod-network-cidr=${__POD_NETWORK_CIDR__}
+    # Initialize Cluster
+init_cluster
 
-    # Setup KUBECONFIG file:
-mkdir -p ${__KUBECONFIG_DIRECTORY__}/.kube
-cp -i /etc/kubernetes/admin.conf  ${__KUBECONFIG_DIRECTORY__}/config
-chown ${__USER__}:${__USER__}  ${__KUBECONFIG_DIRECTORY__}/config
-wait $!
-
-    # Deploy Calico network
-    # Source: https://docs.projectcalico.org/v3.14/manifests/calico.yaml
-    # Modify the config map as needed:
-printf "\n\n${RED}--Deploying Calico Networking...${NC}\n\n"
-${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  create -f $(find ~+ -type f -name 'calico.yaml')
-#${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  create -f https://docs.projectcalico.org/manifests/calico.yaml
-wait $!
-
-    # Metric Server
-printf "\n\n${RED}--Deploying Metric Server Daemonset...${NC}\n\n"
-${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  apply -f $(find ~+ -type f -name 'metric-server.yaml')
-wait $!
-
-    # Cluster join command
-printf "\n\n${RED}--Printing join token...${NC}\n\n"
-${KUBEADM} token create --print-join-command
-wait $!
-${KUBEADM} token create --print-join-command
 exit 0
 }   # END OF SETUP
 ###############################################################################
@@ -203,166 +297,14 @@ exit 0
 ###############################################################################
 function reset(){
 ###############################################################################
-get_env k8s.env
-    # Verify kubeadm and kubectl binary
-kube_binary
-    # Reset Master Node
-${KUBEADM} reset
-wait $!
-    # Reset IP tables
-iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
-wait $!
-    ###########################################################################
-    # Deleting contents of config directories:
-    # [/etc/kubernetes/manifests /etc/kubernetes/pki] Deleting files:
-    # [/etc/kubernetes/admin.conf /etc/kubernetes/kubelet.conf
-    # /etc/kubernetes/bootstrap-kubelet.conf /etc/kubernetes/controller-manager.conf
-    # /etc/kubernetes/scheduler.conf] Deleting contents of stateful directories:
-    # [/var/lib/etcd /var/lib/kubelet /var/lib/dockershim /var/run/kubernetes
-    # /var/lib/cni]
-rm -rf \
-/etc/kubernetes/manifests \
-/etc/kubernetes/pki \
-/etc/kubernetes/admin.conf \
-/etc/kubernetes/kubelet.conf \
-/etc/kubernetes/bootstrap-kubelet.conf \
-/etc/kubernetes/controller-manager.conf \
-/etc/kubernetes/scheduler.conf \
-/var/lib/kubelet \
-/var/lib/dockershim \
-/var/run/kubernetes \
-/var/lib/cni \
-/etc/cni/net.d \
-${__KUBECONFIG_DIRECTORY__}/config
-wait $!
+    # Teardown Cluster
+__teardown__
 
+    # Initialize Cluster
+init_cluster
 
-    # Restart the kubelet
-systemctl daemon-reload &&
-systemctl enable --now kubelet &&
-systemctl restart kubelet &&
-systemctl enable docker &&
-systemctl restart docker
-wait $!
-
-    # On kmaster
-    # Initialize Kubernetes Cluster
-${KUBEADM} init --apiserver-advertise-address=${__APISERVER_ADVERTISE_ADDRESS__} \
---pod-network-cidr=${__POD_NETWORK_CIDR__}
-
-    # Setup KUBECONFIG file:
-mkdir -p ${__KUBECONFIG_DIRECTORY__}/.kube
-cp -i /etc/kubernetes/admin.conf  ${__KUBECONFIG_DIRECTORY__}/config
-chown ${__USER__}:${__USER__}  ${__KUBECONFIG_DIRECTORY__}/config
-wait $!
-
-    # Deploy Calico network
-    # Source: https://docs.projectcalico.org/manifests/calico.yaml
-    # Modify the config map as needed:
-printf "\n\n${RED}--Deploying Calico Networking...${NC}\n\n"
-${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  create -f $(find ~+ -type f -name 'calico.yaml')
-#${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  create -f https://docs.projectcalico.org/manifests/calico.yaml
-wait $!
-
-    # Metric Server
-printf "\n\n${RED}--Deploying Metric Server Daemonset...${NC}\n\n"
-${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  apply -f $(find ~+ -type f -name 'metric-server.yaml')
-wait $!
-
-    # Cluster join command
-printf "\n\n${RED}--Printing join token...${NC}\n\n"
-${KUBEADM} token create --print-join-command
-wait $!
-#
 exit 0
 }   # END OF RESET
-###############################################################################
-###############################################################################
-###############################################################################
-function teardown(){
-###############################################################################
-get_env k8s.env
-    # Verify kubeadm and kubectl binary
-kube_binary
-    # Reset Master Node
-${KUBEADM} reset
-wait $!
-    # Reset IP tables
-iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
-wait $!
-    ###########################################################################
-    # Deleting contents of config directories:
-    # [/etc/kubernetes/manifests /etc/kubernetes/pki] Deleting files:
-    # [/etc/kubernetes/admin.conf /etc/kubernetes/kubelet.conf
-    # /etc/kubernetes/bootstrap-kubelet.conf /etc/kubernetes/controller-manager.conf
-    # /etc/kubernetes/scheduler.conf] Deleting contents of stateful directories:
-    # [/var/lib/etcd /var/lib/kubelet /var/lib/dockershim /var/run/kubernetes
-    # /var/lib/cni]
-rm -rf \
-/etc/kubernetes/manifests \
-/etc/kubernetes/pki \
-/etc/kubernetes/admin.conf \
-/etc/kubernetes/kubelet.conf \
-/etc/kubernetes/bootstrap-kubelet.conf \
-/etc/kubernetes/controller-manager.conf \
-/etc/kubernetes/scheduler.conf \
-/var/lib/kubelet \
-/var/lib/dockershim \
-/var/run/kubernetes \
-/var/lib/cni \
-/etc/cni/net.d \
-${__KUBECONFIG_DIRECTORY__}/config
-wait $!
-    # Restart the kubelet
-systemctl daemon-reload &&
-systemctl enable --now kubelet &&
-systemctl restart kubelet &&
-systemctl enable docker &&
-systemctl restart docker
-wait $!
-}   # END OF TEARDOWN
-###############################################################################
-###############################################################################
-########################    GET ENVIRONMENT FILE    ###########################
-###############################################################################
-function get_env(){
-###############################################################################
-# Local .env
-if [ -f $1 ]; then
-    # Load Environment Variables
-    export $(cat $1 | grep -v '#' | awk '/=/ {print $1}')
-else
-    printf "${RED}Unable to load file. Check your input and rerun again...${NC}\n"
-    exit $?
-fi
-    # Checking if environment variables have loaded
-echo "Master Node address: ${__MASTER_NODE__}"
-echo "Worker node 1 address: ${__WORKER_NODE_1__}"
-echo "Worker node 2 address: ${__WORKER_NODE_2__}"
-echo "Kubernetes API Address: ${__APISERVER_ADVERTISE_ADDRESS__}"
-echo "Kubernetes POD CIDR: ${__POD_NETWORK_CIDR__}"
-echo "User Home Directory: ${__USER_HOME__}"
-echo "User: ${__USER__}"
-echo "Kubernetes config file PATH: ${__KUBECONFIG__}"
-echo "Kubernetes Service Port: ${__KUBERNETES_SERVICE_PORT__}"
-echo "Kubeconfig directory: ${__KUBECONFIG_DIRECTORY__}"
-echo "Kubeconfig file path: ${__KUBECONFIG_FILEPATH__}"
-}   # End of get_env
-###############################################################################
-###############################################################################
-#####################     CHECK ENVIRONMENT VARIABLE      #####################
-###############################################################################
-function check_env() {
-###############################################################################
-        ## Check envirnoment variable
-if [[ -z "$1" ]]; then
-        printf "\n$2 NULL\n" 1>/dev/null 2>/dev/null
-        return ""
-else
-        printf "\n$2 $1\n" 1>/dev/null 2>/dev/null
-        echo "$1"
-fi
-}   # End of check_env
 ###############################################################################
 ###############################################################################
 ######################    TEST THE INPUT PARAMETERS    ########################
@@ -400,7 +342,7 @@ elif [ "${in}" == "test" ]; then
     exit 0
 elif [ "${in}" == "stop" ]; then
     printf "\n\n${RED}TEARING DOWN CLUSTER: ${NC}${HOSTNAME}\n\n"
-    teardown
+    __teardown__
     printf "\n\n${RED}Node: ${HOSTNAME} restored to normal...${NC}\n\n"
     exit 0
 else

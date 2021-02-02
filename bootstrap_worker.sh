@@ -10,7 +10,7 @@ NC='\033[0m' # No Color CAP
 ###############################################################################
 ###############################################################################
 ###############################################################################
-        # Require sudo to run script
+    # Require sudo to run script
 if [[ $UID != 0 ]]; then
     printf "\nPlease run this script with sudo: \n";
     printf "\n${RED} sudo $0 $* ${NC}\n\n";
@@ -18,23 +18,62 @@ if [[ $UID != 0 ]]; then
 fi
 ###############################################################################
 ###############################################################################
-#################     VERIFY KUBEADM AND KUBECTL BINARIES     #################
+########################    GET ENVIRONMENT FILE    ###########################
+###############################################################################
+function get_env(){
+###############################################################################
+# Local .env
+if [ -f $1 ]; then
+    # Load Environment Variables
+    export $(cat $1 | grep -v '#' | awk '/=/ {print $1}')
+else
+    printf "${RED}Unable to load file. Check your input and rerun again...${NC}\n"
+    exit $?
+fi
+    # Checking if environment variables have loaded
+echo "Master Node address: ${__MASTER_NODE__}"
+echo "Worker node 1 address: ${__WORKER_NODE_1__}"
+echo "Worker node 2 address: ${__WORKER_NODE_2__}"
+echo "Kubernetes API Address: ${__APISERVER_ADVERTISE_ADDRESS__}"
+echo "Kubernetes POD CIDR: ${__POD_NETWORK_CIDR__}"
+echo "User Home Directory: ${__USER_HOME__}"
+echo "User: ${__USER__}"
+echo "Kubernetes config file PATH: ${__KUBECONFIG__}"
+echo "Kubernetes Service Port: ${__KUBERNETES_SERVICE_PORT__}"
+echo "Kubeconfig directory: ${__KUBECONFIG_DIRECTORY__}"
+echo "Kubeconfig file path: ${__KUBECONFIG_FILEPATH__}"
+}   # End of get_env
+###############################################################################
+###############################################################################
+#####################     CHECK ENVIRONMENT VARIABLE      #####################
+###############################################################################
+function check_env() {
+###############################################################################
+        ## Check envirnoment variable
+if [[ -z "$1" ]]; then
+        printf "\n$2 NULL\n" 1>/dev/null 2>/dev/null
+        return ""
+else
+        printf "\n$2 $1\n" 1>/dev/null 2>/dev/null
+        echo "$1"
+fi
+}   # End of check_env
+###############################################################################
+###############################################################################
+################     VERIFY KUBEADM AND KUBECTL BINARIES     ##################
 ###############################################################################
 function kube_binary(){
-###############################################################################
-        # Require sudo to run script
+    # Require sudo to run script
 if [[ -z ${KUBEADM} ]]; then
-    printf  "\nUnable to locate ${RED}kubeadm${NC} binary. \nPlease re-run this script using \
-            the ${RED}--setup${NC} flag.\n Usage:${RED} $0 [ --reset | --setup ]${NC}\n";
+    printf "\nUnable to locate ${RED}kubeadm${NC} binary. \nPlease re-run this script using the ${RED}--setup${NC} flag.\n Usage:${RED} $0 [ --reset | --setup ]${NC}\n";
     printf "\n${RED}sudo $0 $*${NC}";
     exit 1
 elif [[ -z ${KUBECTL} ]]; then
-    printf "\nUnable to locate ${RED}kubelet${NC} binary. \nPlease re-run this script using the \
-                ${RED}--setup${NC} flag.\n Usage:${RED} $0 [ --reset | --setup ]${NC}\n";
+        printf "\nUnable to locate ${RED}kubelet${NC} binary. \nPlease re-run this script using the ${RED}--setup${NC} flag.\n Usage:${RED} $0 [ --reset | --setup ]${NC}\n";
     printf "\n$RED}sudo $0 $*${NC}";
     exit 1
 fi
-}       # End of kube_binary
+}   # End of kube_binary check
 ###############################################################################
 ###############################################################################
 ########################      SETUP FIREWALL RULES     ########################
@@ -62,6 +101,29 @@ echo "Ports assignments: "
 firewall-cmd --zone=public --permanent --list-ports
 wait $!
 }   # End of firewall_rules
+###############################################################################
+###############################################################################
+###########################     JOIN FUNCTION     #############################
+###############################################################################
+function join(){
+###############################################################################
+    # Join this cluster to a k8s master node
+status=""
+    ## Just join the cluster
+if [[ -z ${__JOIN_TOKEN__} ]]; then
+    printf "\n${RED}Kubeadm join token is not set...${NC}\n"
+    test_input "join"
+else
+    echo & ${__JOIN_TOKEN__}  2>/dev/null &&
+
+    wait $!
+    if [ "$?" != 0 ]; then
+            printf "\n${RED}ERROR: ${NC}Kubeadm join token return ${RED}${?}${NC}\n"
+            test_input "join"
+    fi
+fi
+wait $!
+ }      # End of join
 ###############################################################################
 ###############################################################################
 ####################    INITIAL SETUP OF CLUSTER NODE     ##################### ###############################################################################
@@ -155,72 +217,7 @@ wait $!
     # Join node to master
 join "$1"
 exit 0
-}
-###############################################################################
-###############################################################################
-###############     GET ENVIRONMENT VARIABLE FROM .env FILE    ################
-###############################################################################
-function get_env(){
-###############################################################################
-# Local .env
-if [ -f $1 ]; then
-    # Load Environment Variables
-    export $(cat $1 | grep -v '#' | awk '/=/ {print $1}')
-else
-    printf "${RED}Unable to load file.  Check your input and rerun again...${NC}\n"
-    exit $?
-fi
-    # Checking if environment variables have loaded
-echo "Master Node address: ${__MASTER_NODE__}"
-echo "Worker node 1 address: ${__WORKER_NODE_1__}"
-echo "Worker node 2 address: ${__WORKER_NODE_2__}"
-echo "Kubernetes API Address: ${__APISERVER_ADVERTISE_ADDRESS__}"
-echo "Kubernetes POD CIDR: ${__POD_NETWORK_CIDR__}"
-echo "User Home Directory: ${__USER_HOME__}"
-echo "User: ${__USER__}"
-echo "Kubernetes config file PATH: ${__KUBECONFIG__}"
-echo "Kubernetes Service Port: ${__KUBERNETES_SERVICE_PORT__}"
-echo "Kubeconfig directory: ${__KUBECONFIG_DIRECTORY__}"
-echo "Kubeconfig file path: ${__KUBECONFIG_FILEPATH__}"
-}       # End of get_env
-###############################################################################
-###############################################################################
-##################   CHECK IF ENVIROMENT VARIABLE EXISTS    ###################
-###############################################################################
-function check_env() {
-###############################################################################
-    ## Check envirnoment variable
-if [[ -z "$1" ]]; then
-        printf "\n$2 NULL\n" 1>/dev/null 2>/dev/null
-        return ""
-else
-        printf "\n$2 $1\n" 1>/dev/null 2>/dev/null
-        echo "$1"
-fi
-}       # End of check_env
-###############################################################################
-###############################################################################
-###########################     JOIN FUNCTION     #############################
-###############################################################################
-function join(){
-###############################################################################
-    # Join this cluster to a k8s master node
-status=""
-    ## Just join the cluster
-if [[ -z ${__JOIN_TOKEN__} ]]; then
-    printf "\n${RED}Kubeadm join token is not set...${NC}\n"
-    test_input "join"
-else
-    echo & ${__JOIN_TOKEN__}  2>/dev/null &&
-
-    wait $!
-    if [ "$?" != 0 ]; then
-            printf "\n${RED}ERROR: ${NC}Kubeadm join token return ${RED}${?}${NC}\n"
-            test_input "join"
-    fi
-fi
-wait $!
- }      # End of join
+}   # End of setup
 ###############################################################################
 ###############################################################################
 #############################     RESET NODE     ##############################
@@ -243,58 +240,18 @@ else
     printf "${RED}Kubernetes join command set ${NC} \nSetting up working node now...\n\n"
 
 fi
+    #####################################################################
+    # Teardown Cluster
+__teardown__
 
-    #####################################################################
-    # Restart Master Node
-${KUBEADM} reset
-wait $!
-    #####################################################################
-    # Deleting contents of config directories:
-    # [/etc/kubernetes/manifests /etc/kubernetes/pki]
-    # Deleting files:
-    # [/etc/kubernetes/admin.conf
-    # /etc/kubernetes/kubelet.conf /etc/kubernetes/bootstrap-kubelet.conf
-    # /etc/kubernetes/controller-manager.conf /etc/kubernetes/scheduler.conf] Deleting contents of
-    # stateful directories: [/var/lib/etcd /var/lib/kubelet /var/lib/dockershim /var/run/kubernetes
-    # /var/lib/cni]
-rm -rf \
-/etc/kubernetes/manifests \
-/etc/kubernetes/pki \
-/etc/kubernetes/admin.conf \
-/etc/kubernetes/kubelet.conf \
-/etc/kubernetes/bootstrap-kubelet.conf \
-/etc/kubernetes/controller-manager.conf \
-/etc/kubernetes/scheduler.conf \
-/var/lib/kubelet \
-/var/lib/dockershim \
-/var/run/kubernetes \
-/var/lib/cni \
-/etc/cni/net.d \
-~/.kube/config
-wait $!
-    # The reset process does not reset or clean up iptables rules or IPVS tables.
-    # If you wish to reset iptables, you must do so manually by using the "iptables" command.
-    # If your cluster was setup to utilize IPVS, run ipvsadm --clear (or similar)
-    # to reset your system's IPVS tables.
-    #####################################################################
-/usr/sbin/ipvsadm --clear
-wait $!
-    #####################################################################
-    # Posts to be defined on the worker nodes
-    # Used by: Self, Control plane
-firewall-cmd --zone=public --add-port=10250/tcp --permanent
-    # Used by: All
-firewall-cmd --zone=public --add-port=30000-32767/tcp --permanent
-firewall-cmd --reload
-wait $!
-    #####################################################################
-    # Restart the kubelet
-systemctl enable kubelet
-systemctl restart kubelet
-systemctl daemon-reload
+    # Restart Docker & Kubelet
+systemctl daemon-reload &&
+systemctl enable --now kubelet &&
+systemctl restart kubelet &&
+systemctl enable docker &&
 systemctl restart docker
-systemctl enable docker
 wait $!
+
     #####################################################################
     # Join node to master
 join "$1"
@@ -304,7 +261,7 @@ exit 0
 ###############################################################################
 ###########################       TEARDOWN      ###############################
 ###############################################################################
-function teardown(){
+function __teardown__(){
 ###############################################################################
 get_env k8s.env
     # Verify kubeadm and kubectl binary
@@ -340,34 +297,17 @@ ${__KUBECONFIG_DIRECTORY__}/config
 wait $!
     # Restart the kubelet
 systemctl daemon-reload &&
-systemctl enable --now kubelet &&
-systemctl restart kubelet &&
+systemctl stop kubelet &&
 systemctl enable docker &&
 systemctl restart docker
 wait $!
 }   # END OF TEARDOWN
 ###############################################################################
 ###############################################################################
-#########################    check_env function      ##########################
+######################    TEST THE INPUT PARAMETERS    ########################
 ###############################################################################
-function check_env(){
+function test_input() {
 ###############################################################################
-## Check envirnoment variable
-if [[ -z "$1" ]]; then
-    printf "\n$2 NULL\n" 1>/dev/null 2>/dev/null
-    return ""
-else
-    printf "\n$2 $1\n" 1>/dev/null 2>/dev/null
-    echo "$1"
-fi
-exit 0
-}
-###############################################################################
-###############################################################################
-#                  TEST THE INPUT PARAMETERS
-###############################################################################
-function test_input()
-{
         ## Exit if no paramaters provided
 i=0
 in="$1"
@@ -406,7 +346,7 @@ elif [ "${in}" == "setup" ]; then
         exit 0
 elif [ "${in}" == "stop" ]; then
     printf "\n\n${RED}TEARING DOWN CLUSTER: ${NC}${HOSTNAME}\n\n"
-    teardown
+    __teardown__
     printf "\n\n${RED}Node: ${HOSTNAME} restored to normal...${NC}\n\n"
     exit 0
 elif [ "${in}" == "test" ]; then
