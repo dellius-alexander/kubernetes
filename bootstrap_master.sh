@@ -204,15 +204,10 @@ get_env k8s.env
 ###############################################################################
     # Reset IP tables
 iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
-    # Pre-requisites Update /etc/hosts So that we can talk to each of the
-    # nodes in the cluster
-cat >/etc/hosts<<EOF
-127.0.0.1 localhost
-::1 localhost
-${__MASTER_NODE__} k8s-master.example.com k8s-master
-${__WORKER_NODE_1__} k8s-worker-node-1.example.com k8s-worker-node-1
-${__WORKER_NODE_2__} k8s-worker-node-2.example.com k8s-worker-node-2
-EOF
+    # Pre-requisites: 
+    # Update /etc/hosts file So that we can talk to each of the
+    # nodes in the cluster. 
+cat hosts.conf > /etc/hosts
 
     # Setup firewall rules
     # Posts to be defined on the worker nodes

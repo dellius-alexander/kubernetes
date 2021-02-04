@@ -24,21 +24,40 @@ You can optionally add an NFS share server to your Cluster.  [Click Here for Mor
 
 <hr/>
 
-### 1. Clone Repo and Edit k8s.env.example File:
+### 1. Clone Repo:
 
 <br/>
 
 <div id="canvas-background">
 
 ```Bash
-# Clone Repo
+# Clone the repo...
 $ git clone https://github.com/dellius-alexander/kubernetes.git
 $ cd kubernetes
-# Rename k8s.env.example file to k8s.env
+# Rename k8s.env.example file to k8s.env and update as needed...
 $ mv k8s.env.example k8s.env
 ```
 
 </div>
+
+### 1.2. Edit hosts.conf file:
+
+<br/>
+
+The `hosts.conf` file defines the hosts/nodes configuration of your cluster.  List all nodes in your cluster here as kubernetes will reference these nodes after they are joined to this cluster. This configuration file will replace the `/etc/hosts` file on each node.  Update the `k8s.env` file for as many nodes as you like as well as `hosts.conf`  file to match each unique variable `"e.g. __WORKER_NODE_#__"` as needed..
+
+<div id="canvas-background">
+
+```bash
+127.0.0.1 localhost
+::1 localhost
+${__MASTER_NODE__} k8s-master.example.com k8s-master
+${__WORKER_NODE_1__} k8s-worker-node-1.example.com k8s-worker-node-1
+${__WORKER_NODE_2__} k8s-worker-node-2.example.com k8s-worker-node-2
+```
+
+</div>
+
 
 
 
@@ -46,6 +65,9 @@ $ mv k8s.env.example k8s.env
 <hr/>
 
 ### 2. Edit the [***k8s.env***](k8s.env.example) file required configuration options:
+
+Add or remove node definitions as needed here to correspond with your `hosts.conf` file.
+
 <br/>
 
 <div id="canvas-background">
@@ -107,11 +129,11 @@ __USER_AUTH__=
 <div id="canvas-background">
 <br/>
 
-You need to install a container runtime into each node in the cluster so that Pods can run there. We will be using `Docker` as the [Container runtimes](https://kubernetes.io/docs/setup/production-environment/container-runtimes/) for our kubernetes cluster.  Docker also offers configuration options for your container runtime.
+You need to install a container runtime on each node in the cluster so that Pods can run there. We will be using `Docker` as the [Container runtimes](https://kubernetes.io/docs/setup/production-environment/container-runtimes/) for our kubernetes cluster. Docker also offers configuration options for your container runtime.
 
 There are two ways to configure the Docker daemon:
 
-* Use a JSON configuration file. This is the preferred option, since it keeps all configurations in a single place.
+* Use a JSON configuration file. This is the preferred option, since it keeps all configurations in a single place and persists restarts.
 * Use flags when starting `dockerd`.
 
 You can use both of these options together as long as you don’t specify the same option both as a flag and in the JSON file. If that happens, the Docker daemon won’t start and prints an error message.
