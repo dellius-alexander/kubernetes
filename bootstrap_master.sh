@@ -200,10 +200,16 @@ wait $!
 #####################    INITIAL SETUP OF CLUSTER NODE    #####################
 ###############################################################################
 function setup() {
+###############################################################################
 get_env k8s.env
 ###############################################################################
+    # Install dependencies
+yum install -y git nano net-tools firewalld
+wait $!
+
     # Reset IP tables
 iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
+
     # Pre-requisites: 
     # Update /etc/hosts file So that we can talk to each of the
     # nodes in the cluster. 
