@@ -213,7 +213,13 @@ iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
     # Pre-requisites: 
     # Update /etc/hosts file So that we can talk to each of the
     # nodes in the cluster. 
-cat hosts.conf > /etc/hosts
+cat >/etc/hosts<<EOF
+127.0.0.1 localhost
+::1 localhost
+${MASTER_NODE} k8s-master.example.com k8s-master
+${WORKER_NODE_1} k8s-worker-1.example.com k8s-worker-1
+${WORKER_NODE_2} k8s-worker-2.example.com k8s-worker-2
+EOF
 
     # Setup firewall rules
     # Posts to be defined on the worker nodes

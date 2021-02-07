@@ -144,8 +144,8 @@ cat >/etc/hosts<<EOF
 127.0.0.1 localhost
 ::1 localhost
 ${MASTER_NODE} k8s-master.example.com k8s-master
-${WORKER_NODE_1} k8s-worker-node-1.example.com k8s-worker-node-1
-${WORKER_NODE_2} k8s-worker-node-2.example.com k8s-worker-node-2
+${WORKER_NODE_1} k8s-worker-1.example.com k8s-worker-1
+${WORKER_NODE_2} k8s-worker-2.example.com k8s-worker-2
 EOF
 
     # Setup firewall rules
