@@ -1,7 +1,7 @@
 # Kubernetes Installation
 
 ---
-## Contents:
+# Contents:
 
 * [On Master Node](#Master_Node)
 * [On Worker Node](#Worker_Node)
@@ -20,11 +20,11 @@ You can optionally add an NFS share server to your Cluster.  [Click Here for Mor
 ---
 ---
 
-## <h2 id="Master_Node">On Master</h2>
+# <h2 id="Master_Node">On Master</h2>
 
 <hr/>
 
-### 1. Clone Repo:
+## 1. Clone Repo:
 
 <br/>
 
@@ -40,7 +40,7 @@ $ mv k8s.env.example k8s.env
 
 </div>
 
-### 1.2. Edit hosts.conf file:
+## 1.2. Edit hosts.conf file:
 
 <br/>
 
@@ -64,7 +64,7 @@ ${__WORKER_NODE_2__} k8s-worker-node-2.example.com k8s-worker-node-2
 <br/>
 <hr/>
 
-### 2. Edit the [***k8s.env***](k8s.env.example) file required configuration options:
+## 2. Edit the [***k8s.env***](k8s.env.example) file required configuration options:
 
 Add or remove node definitions as needed here to correspond with your `hosts.conf` file.
 
@@ -124,7 +124,7 @@ __USER_AUTH__=
 <br/>
 <hr/>
 
-### 3. Docker Daemon Configuration
+## 3. Docker Daemon Configuration
 
 <div id="canvas-background">
 <br/>
@@ -173,7 +173,7 @@ For more details read: [Container runtimes](https://kubernetes.io/docs/setup/pro
 
 </div>
 
-### 4. Execute the [***bootstrap_master.sh***](bootstrap_master.sh) script:
+## 4. Execute the [***bootstrap_master.sh***](bootstrap_master.sh) script:
 <br/>
 
 The bootstrap_master.sh file must be run as ***sudo*** and requires one of three parameter options:
@@ -202,7 +202,7 @@ The ***kubernetes join token*** should be printed upon completion of the bootsta
 <br/>
 <hr/>
 
-### 5. Single Node Cluser Configuration:
+## 5. Single Node Cluser Configuration:
 <br/>
 
 ***WARNING:*** *If you plan to run a single node cluster, you must enable this option below in order for the metrics-server to be enabled.*
@@ -233,12 +233,12 @@ For more information see kubernetes documentation: [control-plane-node-isolation
 ---
 
 
-## <h2 id="Worker_Node">Worker Node</h2>
+# <h2 id="Worker_Node">Worker Node</h2>
 <br/>
 
 ***Note: the below steps must be repeated on each worker node.***
 
-### 1. Retrieve the ***kubernetes join token***:
+## 1. Retrieve the ***kubernetes join token***:
 
 The below command can be run to retrieve the ***kubernetes join token*** from the master node.
 
@@ -258,7 +258,7 @@ kubeadm join 10.0.0.158:6443 --token dx98j6.freduh85iynwtx9t     --discovery-tok
 
 <br/>
 
-### 2. Execute the [***bootstrap_worker.sh***](bootstrap_worker.sh) 
+## 2. Execute the [***bootstrap_worker.sh***](bootstrap_worker.sh) 
 
 <br/>
 
@@ -312,3 +312,45 @@ k8s-worker-node-2    Ready    worker   1m    v1.19.2
 <br/>
 
 ---
+
+## 3. Install bash-completion 
+
+The kubectl completion script for Bash can be generated with the command `kubectl completion bash`. Sourcing the completion script in your shell enables kubectl autocompletion.
+
+However, the completion script depends on [bash-completion](https://github.com/scop/bash-completion#installation), which means that you have to install this software first (you can test if you have bash-completion already installed by running type `_init_completion`).
+
+Bash-completion is provided by many package managers (see [here](https://github.com/scop/bash-completion#installation)). You can install it with `apt-get install bash-completion` or `yum install bash-completion`, etc.
+
+The above commands create /usr/share/bash-completion/bash_completion, which is the main script of bash-completion. Depending on your package manager, you have to manually source this file in your `~/.bashrc` file.
+
+To find out, reload your shell and run type _init_completion. If the command succeeds, you're already set, otherwise add the following to your ~/.bashrc file:
+```bash
+source /usr/share/bash-completion/bash_completion
+```
+
+
+Reload your shell and verify that bash-completion is correctly installed by typing type `_init_completion`.
+
+## Enable kubectl autocompletion:
+
+You now need to ensure that the kubectl completion script gets sourced in all your shell sessions. There are two ways in which you can do this:
+
+Source the completion script in your `~/.bashrc` file:
+
+```bash
+echo 'source <(kubectl completion bash)' >>~/.bashrc
+```
+
+Add the completion script to the /etc/bash_completion.d directory:
+
+```bash
+kubectl completion bash >/etc/bash_completion.d/kubectl
+  ```
+
+If you have an alias for kubectl, you can extend shell completion to work with that alias:
+```bash
+echo 'alias k=kubectl' >>~/.bashrc
+echo 'complete -F __start_kubectl k' >>~/.bashrc
+```
+
+Note: bash-completion sources all completion scripts in /etc/bash_completion.d.
