@@ -216,9 +216,9 @@ iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
 cat >/etc/hosts<<EOF
 127.0.0.1 localhost
 ::1 localhost
-${MASTER_NODE} k8s-master.example.com k8s-master
-${WORKER_NODE_1} k8s-worker-1.example.com k8s-worker-1
-${WORKER_NODE_2} k8s-worker-2.example.com k8s-worker-2
+${__MASTER_NODE__} k8s-master.example.com k8s-master
+${__WORKER_NODE_1__} k8s-worker-1.example.com k8s-worker-1
+${__WORKER_NODE_2__} k8s-worker-2.example.com k8s-worker-2
 EOF
 
     # Setup firewall rules
