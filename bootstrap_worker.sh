@@ -103,6 +103,51 @@ wait $!
 }   # End of firewall_rules
 ###############################################################################
 ###############################################################################
+###########################       TEARDOWN      ###############################
+###############################################################################
+function __teardown__(){
+###############################################################################
+get_env k8s.env
+    # Verify kubeadm and kubectl binary
+kube_binary
+    # Reset Master Node
+${KUBEADM} reset
+wait $!
+    # Reset IP tables
+iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
+wait $!
+    ###########################################################################
+    # Deleting contents of config directories:
+    # [/etc/kubernetes/manifests /etc/kubernetes/pki] Deleting files:
+    # [/etc/kubernetes/admin.conf /etc/kubernetes/kubelet.conf
+    # /etc/kubernetes/bootstrap-kubelet.conf /etc/kubernetes/controller-manager.conf
+    # /etc/kubernetes/scheduler.conf] Deleting contents of stateful directories:
+    # [/var/lib/etcd /var/lib/kubelet /var/lib/dockershim /var/run/kubernetes
+    # /var/lib/cni]
+rm -rf \
+/etc/kubernetes/manifests \
+/etc/kubernetes/pki \
+/etc/kubernetes/admin.conf \
+/etc/kubernetes/kubelet.conf \
+/etc/kubernetes/bootstrap-kubelet.conf \
+/etc/kubernetes/controller-manager.conf \
+/etc/kubernetes/scheduler.conf \
+/var/lib/kubelet \
+/var/lib/dockershim \
+/var/run/kubernetes \
+/var/lib/cni \
+/etc/cni/net.d \
+${__KUBECONFIG_DIRECTORY__}/config
+wait $!
+    # Restart the kubelet
+systemctl daemon-reload &&
+systemctl stop kubelet &&
+systemctl enable docker &&
+systemctl restart docker
+wait $!
+}   # END OF TEARDOWN
+###############################################################################
+###############################################################################
 ###########################     JOIN FUNCTION     #############################
 ###############################################################################
 function join(){
@@ -133,20 +178,15 @@ function setup() {
 get_env k8s.env
 ###############################################################################
     # Install dependencies
-yum install -y git nano net-tools firewalld
+yum install -y git nano net-tools firewalld nfs-utils
 wait $!
 
     # Reset IP tables
 iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
+
     # Pre-requisites Update /etc/hosts So that we can talk to each of the
     # nodes in the cluster
-cat >/etc/hosts<<EOF
-127.0.0.1 localhost
-::1 localhost
-${__MASTER_NODE__} k8s-master.example.com k8s-master
-${__WORKER_NODE_1__} k8s-worker-1.example.com k8s-worker-1
-${__WORKER_NODE_2__} k8s-worker-2.example.com k8s-worker-2
-EOF
+cat hosts.conf > /etc/hosts
 
     # Setup firewall rules
     # Posts to be defined on the worker nodes
@@ -192,6 +232,7 @@ cat daemon.json > /etc/docker/daemon.json
 
     # Create docker service
 mkdir -p /etc/systemd/system/docker.service.d
+
     # Enable & Restart Docker
 systemctl daemon-reload
 systemctl restart docker
@@ -263,51 +304,6 @@ wait $!
 join "$1"
 exit 0
 }   # End of reset
-###############################################################################
-###############################################################################
-###########################       TEARDOWN      ###############################
-###############################################################################
-function __teardown__(){
-###############################################################################
-get_env k8s.env
-    # Verify kubeadm and kubectl binary
-kube_binary
-    # Reset Master Node
-${KUBEADM} reset
-wait $!
-    # Reset IP tables
-iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
-wait $!
-    ###########################################################################
-    # Deleting contents of config directories:
-    # [/etc/kubernetes/manifests /etc/kubernetes/pki] Deleting files:
-    # [/etc/kubernetes/admin.conf /etc/kubernetes/kubelet.conf
-    # /etc/kubernetes/bootstrap-kubelet.conf /etc/kubernetes/controller-manager.conf
-    # /etc/kubernetes/scheduler.conf] Deleting contents of stateful directories:
-    # [/var/lib/etcd /var/lib/kubelet /var/lib/dockershim /var/run/kubernetes
-    # /var/lib/cni]
-rm -rf \
-/etc/kubernetes/manifests \
-/etc/kubernetes/pki \
-/etc/kubernetes/admin.conf \
-/etc/kubernetes/kubelet.conf \
-/etc/kubernetes/bootstrap-kubelet.conf \
-/etc/kubernetes/controller-manager.conf \
-/etc/kubernetes/scheduler.conf \
-/var/lib/kubelet \
-/var/lib/dockershim \
-/var/run/kubernetes \
-/var/lib/cni \
-/etc/cni/net.d \
-${__KUBECONFIG_DIRECTORY__}/config
-wait $!
-    # Restart the kubelet
-systemctl daemon-reload &&
-systemctl stop kubelet &&
-systemctl enable docker &&
-systemctl restart docker
-wait $!
-}   # END OF TEARDOWN
 ###############################################################################
 ###############################################################################
 ######################    TEST THE INPUT PARAMETERS    ########################

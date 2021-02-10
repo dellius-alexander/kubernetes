@@ -1,0 +1,5 @@
+127.0.0.1 localhost
+::1 localhost
+<IP Address> k8s-master.example.com k8s-master
+<IP Address> k8s-worker-node-1.example.com k8s-worker-node-1
+<IP Address> k8s-worker-node-2.example.com k8s-worker-node-2

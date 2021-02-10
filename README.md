@@ -26,47 +26,60 @@ You can optionally add an NFS share server to your Cluster.  [Click Here for Mor
 
 ## 1. Clone Repo:
 
-<br/>
 
 <div id="canvas-background">
+
+<br/>
+
+Clone the kubernetes repo:
+
 
 ```Bash
 # Clone the repo...
 $ git clone https://github.com/dellius-alexander/kubernetes.git
 $ cd kubernetes
-# Rename k8s.env.example file to k8s.env and update as needed...
-$ mv k8s.env.example k8s.env
+
 ```
 
 </div>
 
 ## 1.2. Edit hosts.conf file:
 
+<div id="canvas-background">
+
 <br/>
 
-The `hosts.conf` file defines the hosts/nodes configuration of your cluster.  List all nodes in your cluster here as kubernetes will reference these nodes after they are joined to this cluster. This configuration file will replace the `/etc/hosts` file on each node.  Update the `k8s.env` file for as many nodes as you like as well as `hosts.conf`  file to match each unique variable `"e.g. __WORKER_NODE_#__"` as needed..
+The `hosts.conf` file defines the hosts/nodes configuration of your cluster.  List all nodes in your cluster here, as kubernetes will reference these IP Addresses and Domains for networking purposes. This configuration file will replace the `/etc/hosts` file on each node. 
 
-<div id="canvas-background">
+***Warning:*** if this is not a clean/new VM instance, please check the existing `/etc/hosts` file for configured domain listing and add them to this file so these services are not interupted.
+
+
 
 ```bash
 127.0.0.1 localhost
 ::1 localhost
-${__MASTER_NODE__} k8s-master.example.com k8s-master
-${__WORKER_NODE_1__} k8s-worker-node-1.example.com k8s-worker-node-1
-${__WORKER_NODE_2__} k8s-worker-node-2.example.com k8s-worker-node-2
+10.0.0.40 k8s-master.example.com k8s-master
+10.0.0.41 k8s-worker-node-1.example.com k8s-worker-node-1
+10.0.0.42 k8s-worker-node-2.example.com k8s-worker-node-2
 ```
 
 </div>
-
-
-
 
 <br/>
 <hr/>
 
 ## 2. Edit the [***k8s.env***](k8s.env.example) file required configuration options:
 
+Rename the `k8s.env.example` file to `k8s.env` and edit the below configuration options.
+
+```bash
+# Rename k8s.env.example file to k8s.env and update as needed...
+$ mv k8s.env.example k8s.env
+```
+
 Add or remove node definitions as needed here to correspond with your `hosts.conf` file.
+
+***Note:*** Update the `NODE` reference in the environment file to correspond the `hosts.conf` file.
 
 <br/>
 
@@ -78,10 +91,13 @@ Add or remove node definitions as needed here to correspond with your `hosts.con
 $ vi k8s.env
 ##### REQUIRED CONFIGURATION OPTIONS #####
 #
-__MASTER_NODE__=<Enter IP Address>    # Enter IP Address of master
-__WORKER_NODE_1__=<Enter IP Address>    # Enter IP Address of worker 1
-__WORKER_NODE_2__=<Enter IP Address>    # Enter IP Address of worker 2
-__APISERVER_ADVERTISE_ADDRESS__=<Enter IP Address of __MASTER_NODE__>   # EDIT
+__MASTER_NODE__=10.0.0.40   # Enter IP Address of master
+__WORKER_NODE_1__=10.0.0.41   # Enter IP Address of worker 1
+__WORKER_NODE_2__=10.0.0.42   # Enter IP Address of worker 2
+
+# ...... DEFINE MORE WORKER NODES AS NEEDED ......
+
+__APISERVER_ADVERTISE_ADDRESS__=10.0.0.40   # Enter IP Address of master
 __CNI_MTU__=1500
 __CALICO_DISABLE_FILE_LOGGING__=info
 __CALICO_IPV4POOL_CIDR__=/16
@@ -89,17 +105,17 @@ __CALICO_IPV4POOL_IPIP__=Always
 __CALICO_IPV4POOL_VXLAN__=Never
 __CALICO_NETWORKING_BACKEND__=bird
 __DATASTORE_TYPE__=kubernetes
-__K8S_API_ROOT__=http://<Enter IP Address of __MASTER_NODE__>:6443    # EDIT 
-__KUBECONFIG__=/<Directory of kubeconfig file>/.kube/config    # EDIT 
+__K8S_API_ROOT__=http://10.0.0.40:6443    # Enter IP Address of master
+__KUBECONFIG__=/home/dalexander/.kube/config    # Enter the desired location of your KUBECONFIG file
 __KUBECONFIG_FILEPATH__=/etc/kubernetes/admin.conf
-__KUBECONFIG_DIRECTORY__=/<Directory of kubeconfig file>/.kube    # EDIT 
+__KUBECONFIG_DIRECTORY__=/home/dalexander/.kube    # Enter the desired directory of your KUBECONFIG directory 
 __KUBERNETES_NODE_NAME__=k8s-master
-__KUBERNETES_SERVICE_HOST__=<Enter IP Address>    # EDIT 
+__KUBERNETES_SERVICE_HOST__=10.0.0.40    # Enter IP Address of master
 __KUBERNETES_SERVICE_PORT__=6443
 __NODENAME__=k8s-master
-__POD_NETWORK_CIDR__=192.168.0.0/16
-__USER__=<Enter system user info aka $USER>    # EDIT 
-__USER_HOME__=<Enter system user home directory>    # EDIT 
+__POD_NETWORK_CIDR__=192.168.0.0/16    # Enter the desired network/cidr information
+__USER__=dalexander    # Enter admin username
+__USER_HOME__=/home/dalexander    # Enter admin home directory
 #
 ##### OPTIONAL CONFIGURATION #####
 #
