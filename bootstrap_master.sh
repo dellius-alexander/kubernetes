@@ -135,13 +135,13 @@ wait $!
     # Source: https://docs.projectcalico.org/v3.14/manifests/calico.yaml
     # Modify the config map as needed:
 printf "\n\n${RED}--Deploying Calico Networking...${NC}\n\n"
-${KUBECTL} --kubeconfig=${__KUBECONFIG_}  create -f $(find ~+ -type f -name 'calico.yaml')
+${KUBECTL} --kubeconfig=${__KUBECONFIG__}  create -f $(find ~+ -type f -name 'calico.yaml')
 #${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  create -f https://docs.projectcalico.org/manifests/calico.yaml
 wait $!
 
     # Metric Server
 printf "\n\n${RED}--Deploying Metric Server Daemonset...${NC}\n\n"
-${KUBECTL} --kubeconfig=${__KUBECONFIG_}  apply -f $(find ~+ -type f -name 'metric-server.yaml')
+${KUBECTL} --kubeconfig=${__KUBECONFIG__}  apply -f $(find ~+ -type f -name 'metric-server.yaml')
 wait $!
 
     # Cluster join command
