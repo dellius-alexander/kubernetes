@@ -124,7 +124,7 @@ spec:
 ---
 
 apiVersion: apps/v1
-kind: DaemonSet
+kind: Deployment
 metadata:
   labels:
     k8s-app: metrics-server
@@ -134,9 +134,9 @@ spec:
   selector:
     matchLabels:
       k8s-app: metrics-server
-  # strategy:
-  #   rollingUpdate:
-  #     maxUnavailable: 0
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
   template:
     metadata:
       labels:
