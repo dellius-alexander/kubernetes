@@ -254,6 +254,9 @@ For more information see kubernetes documentation: [control-plane-node-isolation
 
 ***Note: the below steps must be repeated on each worker node.***
 
+---
+---
+
 ## 1. Retrieve the ***kubernetes join token***:
 
 The below command can be run to retrieve the ***kubernetes join token*** from the master node.
@@ -273,6 +276,9 @@ kubeadm join 10.0.0.158:6443 --token dx98j6.freduh85iynwtx9t     --discovery-tok
 
 
 <br/>
+
+---
+---
 
 ## 2. Execute the [***bootstrap_worker.sh***](bootstrap_worker.sh) 
 
@@ -328,6 +334,7 @@ k8s-worker-node-2    Ready    worker   1m    v1.19.2
 <br/>
 
 ---
+---
 
 ## 3. Install bash-completion 
 
@@ -337,11 +344,15 @@ However, the completion script depends on [bash-completion](https://github.com/s
 
 Bash-completion is provided by many package managers (see [here](https://github.com/scop/bash-completion#installation)). You can install it with `apt-get install bash-completion` or `yum install bash-completion`, etc.
 
+```bash
+$ sudo yum install -y bash-completion
+```
+
 The above commands create /usr/share/bash-completion/bash_completion, which is the main script of bash-completion. Depending on your package manager, you have to manually source this file in your `~/.bashrc` file.
 
 To find out, reload your shell and run type _init_completion. If the command succeeds, you're already set, otherwise add the following to your ~/.bashrc file:
 ```bash
-source /usr/share/bash-completion/bash_completion
+$ source /usr/share/bash-completion/bash_completion
 ```
 
 
@@ -354,19 +365,20 @@ You now need to ensure that the kubectl completion script gets sourced in all yo
 Source the completion script in your `~/.bashrc` file:
 
 ```bash
-echo 'source <(kubectl completion bash)' >>~/.bashrc
+$ echo 'source <(kubectl completion bash)' >>~/.bashrc
 ```
 
 Add the completion script to the /etc/bash_completion.d directory:
 
 ```bash
-kubectl completion bash >/etc/bash_completion.d/kubectl
+$ sudo -i
+$ kubectl completion bash >/etc/bash_completion.d/kubectl
   ```
 
 If you have an alias for kubectl, you can extend shell completion to work with that alias:
 ```bash
-echo 'alias k=kubectl' >>~/.bashrc
-echo 'complete -F __start_kubectl k' >>~/.bashrc
+$ echo 'alias k=kubectl' >>~/.bashrc
+$ echo 'complete -F __start_kubectl k' >>~/.bashrc
 ```
 
 Note: bash-completion sources all completion scripts in /etc/bash_completion.d.
