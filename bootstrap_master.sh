@@ -124,6 +124,7 @@ function init_cluster() {
     # Initialize Kubernetes Cluster
 ${KUBEADM} init --apiserver-advertise-address=${__APISERVER_ADVERTISE_ADDRESS__} \
 --pod-network-cidr=${__POD_NETWORK_CIDR__}
+wait $!
 
     # Setup KUBECONFIG file:
 mkdir -p ${__KUBECONFIG_DIRECTORY__}
