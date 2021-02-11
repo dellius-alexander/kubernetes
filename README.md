@@ -365,6 +365,7 @@ You now need to ensure that the kubectl completion script gets sourced in all yo
 Source the completion script in your `~/.bashrc` file:
 
 ```bash
+$ source <(kubectl completion bash)
 $ echo 'source <(kubectl completion bash)' >>~/.bashrc
 ```
 
