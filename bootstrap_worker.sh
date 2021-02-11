@@ -216,7 +216,7 @@ yum-config-manager \
 --add-repo https://download.docker.com/linux/centos/docker-ce.repo  > /dev/null 2>&1
 wait $!
 
-yum update -y && yum install -y \
+yum install -y \
 containerd.io-1.3.7 \
 docker-ce-${__DOCKER_VERS__} \
 docker-ce-cli-${__DOCKER_VERS__} >/dev/null 2>&1
@@ -250,6 +250,7 @@ repo_gpgcheck=1
 gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 exclude=kubelet kubeadm kubectl
 EOF
+
 
     # Install Kubernetes components
 yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
