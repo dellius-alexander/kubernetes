@@ -3,6 +3,14 @@
 RED='\033[0;31m' # Red
 NC='\033[0m' # No Color CAP
 ##########################################################################
+##########################################################################
+    # Require sudo to run script
+if [[ $UID != 0 ]]; then
+    printf "\nPlease run this script with sudo: \n";
+    printf "\n${RED} sudo $0 $* ${NC}\n\n";
+    exit 1
+fi
+##########################################################################
 #
 if [[ ! -z ${1} ]] && [[ ! -z ${2} ]] && [[ ! -z ${3} ]]; then
 yum install yum -y  nfs-utils nfs-utils-lib firewalld

@@ -1,8 +1,17 @@
 #!/usr/bin/env bash
+set -e
 ##########################################################################
-CA_LOCATION=/etc/kubernetes/pki # Location of kubernetes ca.crt
+export CA_LOCATION=/etc/kubernetes/pki # Location of kubernetes ca.crt
 RED='\033[0;31m' # Red
 NC='\033[0m' # No Color CAP
+##########################################################################
+##########################################################################
+    # Require sudo to run script
+if [[ $UID != 0 ]]; then
+    printf "\nPlease run this script with sudo: \n";
+    printf "\n${RED} sudo $0 $* ${NC}\n\n";
+    exit 1
+fi
 ##########################################################################
 #
 # Generate a user private key
@@ -48,3 +57,4 @@ kubectl config set-credentials metric-server \
 --client-certificate=/home/dalexander/k8s/kubernetes/certs/metric-server.crt \
 --embed-certs=true
 wait $!
+set -e
