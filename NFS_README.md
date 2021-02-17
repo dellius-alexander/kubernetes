@@ -234,7 +234,7 @@ Now, create a directory on the NFS client to mount the NFS share directory /nfsf
 <br/>
 
 ```Bash
-$ mkdir /mnt/nfsfileshare
+$ mkdir -p /mnt/nfsfileshare
 ```
 
 ### Mount NFS Share on Client machine:
