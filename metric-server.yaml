@@ -78,11 +78,11 @@ rules:
   resources:
   - signers
   resourceNames:
-  # example.com/* can be used to authorize for all signers in the 'example.com' domain  
-  - example.com/* 
+  # example.com/* can be used to authorize for all signers in the 'example.com' domain
+  - example.com/*
   verbs:
   - approve
-  
+
 ---
 
 apiVersion: rbac.authorization.k8s.io/v1
@@ -182,14 +182,16 @@ spec:
           requests:
             cpu: 100m
             memory: 256Mi
-          limits:  
+          limits:
             cpu: 500m
             memory: 2048Mi
         command:
         - /metrics-server
         - --kubelet-insecure-tls
         - --kubelet-preferred-address-types=InternalDNS,InternalIP,ExternalDNS,ExternalIP,Hostname
-        - --requestheader-client-ca-file=
+        - --cert-dir=/tmp
+        - --secure-port=4443
+        - --requestheader-client-ca-file="/tmp/certs/metric-server.crt"
         - --requestheader-allowed-names=aggregator
         - --requestheader-extra-headers-prefix=X-Remote-Extra-
         - --requestheader-group-headers=X-Remote-Group
@@ -217,15 +219,20 @@ spec:
           runAsNonRoot: true
           runAsUser: 1000
         volumeMounts:
-        - mountPath: /tmp
-          name: tmp-dir
+        - name: tmp-dir
+          mountPath: /tmp
+        - name: cert-ca-config
+          mountPath: /tmp/certs
       nodeSelector:
         kubernetes.io/os: linux
       priorityClassName: system-cluster-critical
       serviceAccountName: metrics-server
       volumes:
-      - emptyDir: {}
-        name: tmp-dir
+      - name: tmp-dir
+        emptyDir: {}
+      - name: cert-ca-config
+        configMap:
+          name: cert-ca-config
       hostAliases:
       - ip: "10.0.0.40"
         hostnames:
@@ -244,9 +251,9 @@ spec:
         - "k8s-worker-2.dellius.org"
       - ip: "10.0.0.43"
         hostnames:
-        - "k8s-worker-2"
-        - "k8s-worker-2.example.com"
-        - "k8s-worker-2.dellius.org"
+        - "k8s-worker-3"
+        - "k8s-worker-3.example.com"
+        - "k8s-worker-3.dellius.org"
 
 ---
 

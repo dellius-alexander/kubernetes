@@ -1,0 +1,27 @@
+# https://kubernetes.io/docs/concepts/configuration/configmap/
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cert-ca-config
+  labels:
+    k8s-app: metrics-server
+  namespace: kube-system
+data:
+  metric-server.crt: |-
+-----BEGIN CERTIFICATE-----
+MIICqTCCAZECCQDRFiMwILRxIjANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDEwpr
+dWJlcm5ldGVzMB4XDTIxMDIyNzE4MDc0OFoXDTIyMDcxMjE4MDc0OFowGDEWMBQG
+A1UEAwwNbWV0cmljLXNlcnZlcjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC
+ggEBAJXPEkb21xG3hrLNUn4Wnqgv5cLudoKk9Kh27XYl6R33sqNs1zKhIpNjIjbE
+WLxu4qaCZO4FssUumrjuIbgDPWIi6a93rMpYpmVY6XJqmLtP98c/fCqxM4FH+cBs
+jG27YKqghBcF5HmNqiwNLN8gWW8GkSe+MwSODbRxSuNNnto1CtutQy2FIkzClzbx
+WfBypQiCDtkYgmpnxvRjBS4H/C02gWwqffj26tdEfOh802ywrptWOnGBH28cITZT
+jRFA8FYG018VkezsJd6CIlkJqatGquY83qGrXmL6oxGWFXWbgYdq5Ov7JICwmP1z
+gQCX9QxWfevESHunWyFqJMEpshMCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAWARo
+R9rbUnGuNpKYjhAdUMpaIlol/fHdyOQuBtoxMRPCNzRICXTFxNzFNC8Qb6q9VPXl
+V6vEqEoc8pQBMGDfs8DrIzM8ttx4YUyrYHEZVtjAJiyR2K4D8t3BxuJMA3hgiyFK
+7YAvZDSrIt/+C+ZZLue1ki3MGyIgLuYEP0Ho7/Byl3dujMQ2QhHMkdTldxelXPSu
+P0HEkYenk+zPYfjh5auavRDDwCO79tWB6r+G6ObL0f9Qqt2WMecefaduETGP2hBk
+n3ep5wzqw1EErURDno0SiJLrOVYPPAR47cCoejBqju2nryyUe2ySXdlQzONMvF/g
+8lgW2rTekKJcu/zgwA==
+-----END CERTIFICATE-----
