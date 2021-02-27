@@ -187,7 +187,7 @@ spec:
             cpu: 500m
             memory: 2048Mi
         args:
-        - --cert-dir=/tmp/certs
+        - --cert-dir=/tmp
         - --secure-port=4443
         - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
         - --kubelet-use-node-status-port
@@ -195,7 +195,7 @@ spec:
         # - --cert-dir=/tmp/certs
         - --authentication-kubeconfig=/tmp/certs/config
         # - --kubelet-preferred-address-types=InternalDNS,InternalIP,ExternalDNS,ExternalIP,Hostname
-        - --requestheader-client-ca-file=/tmp/certs/metrics-server.crt
+        - --requestheader-client-ca-file=/tmp/certs/apiserver.crt
         - --bind-address=0.0.0.0
         - --requestheader-allowed-names=aggregator
         - --requestheader-extra-headers-prefix=X-Remote-Extra-
