@@ -187,11 +187,19 @@ spec:
             cpu: 500m
             memory: 2048Mi
         args:
-        - --cert-dir=/tmp
+        - --cert-dir=/tmp/certs
         - --secure-port=4443
-        - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
+        #- --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
         - --kubelet-use-node-status-port
-        - --kubelet-insecure-tls
+        #- --kubelet-insecure-tls
+        #- --authentication-kubeconfig=/tmp/certs/config
+        - --kubelet-preferred-address-types=InternalDNS,InternalIP,ExternalDNS,ExternalIP,Hostname
+        - --requestheader-client-ca-file=/tmp/certs/apiserver.crt
+        - --bind-address=0.0.0.0
+        - --requestheader-allowed-names=aggregator
+        - --requestheader-extra-headers-prefix=X-Remote-Extra-
+        - --requestheader-group-headers=X-Remote-Group
+        - --requestheader-username-headers=X-Remote-User
         livenessProbe:
           failureThreshold: 3
           httpGet:
@@ -232,8 +240,8 @@ spec:
           items:
           - key: apiserver.crt
             path: apiserver.crt
-          - key: ca.crt
-            path: ca.crt
+          - key: apiserver.key
+            path: apiserver.key
           - key: config
             path: config
       hostAliases:
@@ -265,7 +273,7 @@ kind: APIService
 metadata:
   labels:
     k8s-app: metrics-server
-  name: v1.metrics.k8s.io
+  name: v1beta1.metrics.k8s.io
 spec:
   group: metrics.k8s.io
   groupPriorityMinimum: 100
@@ -273,5 +281,5 @@ spec:
   service:
     name: metrics-server
     namespace: kube-system
-  version: v1
+  version: v1beta1
   versionPriority: 100

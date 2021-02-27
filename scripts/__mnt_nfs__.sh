@@ -27,7 +27,8 @@ if [[ $(cat /etc/fstab | grep ${1} | grep ${2} | grep -c ${3}) -eq 0 ]]; then
 cat >>/etc/fstab<<EOF
 ${1}:${2} ${3}  nfs     nosuid,rw,sync,hard,intr    0   0
 EOF
-printf "\n\nMounted ${2} successfully to ${3} from host ${1}...\n\n\n"
+chmod 775 ${3}
+printf "\n\n${RED}Mounted ${2} successfully to ${3} from host ${1}...${NC}\n\n\n"
 ls -lia ${3}
 printf "\n\n"
 fi
