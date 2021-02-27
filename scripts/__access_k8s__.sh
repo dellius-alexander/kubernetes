@@ -11,8 +11,7 @@ if [[ $UID != 0 ]]; then
   printf "\nPlease run this script with sudo: \n";
   printf "\n${RED} sudo $0 $* ${NC}\n\n";
   exit 1
--
-elif [[ ! -z ${1} -eq "[a-zA-Z0-9_]"]]; then
+elif [[ -z ${1} ]] && [[ ${1} =~ [^a-zA-Z0-9_-] ]]; then
   printf "\n\n${RED}Usage: ${0} <name of certificate>${NC}\n\n"
 fi
 ##########################################################################
@@ -30,12 +29,14 @@ openssl x509 -req -in ${1}.csr -CA ${CA_LOCATION}/ca.crt -CAkey ${CA_LOCATION}/c
 wait $!
 #
 # Create a CertificateSigningRequest and submit it to a Kubernetes Cluster via kubectl
-# request: is the base64 encoded value of the CSR file content. 
+# request: is the base64 encoded value of the CSR file content.
 # You can get the content using this command: cat metric-server.csr | base64 | tr -d "\n"
 #
-ENCODED_REQUEST=$(cat ${1}.csr | base64 | tr -d "\n")
+__ENCODED_REQUEST__=$(cat ${1}.csr | base64 | tr -d "\n")
 #
-kubectl apply -n kube-system -f - <<EOF
+#printf "\n${__ENCODED_REQUEST__}\n"
+#
+cat <<EOF | kubectl apply -f -
 apiVersion: certificates.k8s.io/v1
 kind: CertificateSigningRequest
 metadata:
@@ -44,7 +45,7 @@ spec:
   groups:
   - system:nodes
   - system:authenticated
-  request: ${ENCODED_REQUEST}
+  request: ${__ENCODED_REQUEST__}
   signerName: kubernetes.io/kube-apiserver-client
   usages:
   - client auth
