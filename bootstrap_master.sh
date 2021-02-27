@@ -141,7 +141,7 @@ ${KUBECTL} --kubeconfig=${__KUBECONFIG__} create -f $(find ~+ -type f -name 'cal
 wait $!
 
     # Metric Server
-if [[ -f "metric-ca-config" ]]; then
+if [[ -f $(find ~+ -type f -name 'metrics-ca-config.yaml') ]]; then
      printf "\n\n${RED}--Deploying Metric Server Daemonset...${NC}\n\n"
      ${KUBECTL} --kubeconfig=${__KUBECONFIG__}  apply -f $(find ~+ -type f -name 'metrics-ca-config.yaml')
      ${KUBECTL} --kubeconfig=${__KUBECONFIG__}  apply -f $(find ~+ -type f -name 'metrics-server.yaml')
