@@ -192,9 +192,9 @@ spec:
         - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
         - --kubelet-use-node-status-port
         #- --kubelet-insecure-tls
-        - --authentication-kubeconfig=/tmp/certs/config
+        - --authentication-kubeconfig=/tmp/config
         # - --kubelet-preferred-address-types=InternalDNS,InternalIP,ExternalDNS,ExternalIP,Hostname
-        - --requestheader-client-ca-file=/tmp/certs/apiserver.crt
+        - --requestheader-client-ca-file=/tmp/ca.crt
         - --bind-address=0.0.0.0
         - --requestheader-allowed-names=aggregator
         - --requestheader-extra-headers-prefix=X-Remote-Extra-
@@ -226,7 +226,7 @@ spec:
         - name: tmp-dir
           mountPath: /tmp
         - name: cert-ca-config
-          mountPath: /tmp/certs
+          mountPath: /tmp
       nodeSelector:
         kubernetes.io/os: linux
       priorityClassName: system-cluster-critical
@@ -240,6 +240,8 @@ spec:
           items:
           - key: apiserver.crt
             path: apiserver.crt
+          - key: ca.crt
+            path: ca.crt
           - key: config
             path: config
       hostAliases:
