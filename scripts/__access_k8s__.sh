@@ -17,16 +17,18 @@ fi
 ##########################################################################
 #
 # Generate a user private key
-openssl genrsa -out ${1}.key 2048
-wait $!
+openssl genrsa -out ${1}.key 2048 &&
+wait $! &&
 #
 # Generate a CSR
-openssl req -new -key ${1}.key -out ${1}.csr -subj "/CN=${1}/SAN=${1}.kube-system.svc"
-wait $!
+openssl req -new -key ${1}.key -out ${1}.csr -subj "/CN=${1}/SAN=${1}.kube-system.svc" &&
+wait $!  &&
 #
 # On a k8s master, sign the CSR
-openssl x509 -req -in ${1}.csr -CA ${CA_LOCATION}/ca.crt -CAkey ${CA_LOCATION}/ca.key -CAcreateserial -out ${1}.crt -days 500
-wait $!
+openssl x509 -req -in ${1}.csr -CA ${CA_LOCATION}/ca.crt -CAkey ${CA_LOCATION}/ca.key -CAcreateserial -out ${1}.crt -days 500 &&
+wait $! &&
+mkdir -p certs &&
+mv ${1}.* certs/*
 #
 # Create a CertificateSigningRequest and submit it to a Kubernetes Cluster via kubectl
 # request: is the base64 encoded value of the CSR file content.
@@ -57,8 +59,8 @@ kubectl certificate approve ${1}
 kubectl get csr/${1} -o yaml
 #
 kubectl config set-credentials ${1} \
---client-key=/home/dalexander/k8s/kubernetes/certs/${1}.key \
---client-certificate=/home/dalexander/k8s/kubernetes/certs/${1}.crt \
+--client-key=$(find ~+ -type f -name "${1}.key") \
+--client-certificate=$(find ~+ -type f -name "${1}.crt") \
 --embed-certs=true
 wait $!
 ##########################################################################
