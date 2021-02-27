@@ -8,35 +8,38 @@ NC='\033[0m' # No Color CAP
 ##########################################################################
     # Require sudo to run script
 if [[ $UID != 0 ]]; then
-    printf "\nPlease run this script with sudo: \n";
-    printf "\n${RED} sudo $0 $* ${NC}\n\n";
-    exit 1
+  printf "\nPlease run this script with sudo: \n";
+  printf "\n${RED} sudo $0 $* ${NC}\n\n";
+  exit 1
+-
+elif [[ ! -z ${1} -eq "[a-zA-Z0-9_]"]]; then
+  printf "\n${RED}Usage: ${0} <name of certificate>${NC}\n"
 fi
 ##########################################################################
 #
 # Generate a user private key
-openssl genrsa -out metric-server.key 2048
+openssl genrsa -out ${1}.key 2048
 wait $!
 #
 # Generate a CSR
-openssl req -new -key metric-server.key -out metric-server.csr -subj "/CN=metric-server/O=poweruser/SAN=metrics-server.kube-system.svc"
+openssl req -new -key ${1}.key -out ${1}.csr -subj "/CN=${1}/SAN=${1}.kube-system.svc"
 wait $!
 #
 # On a k8s master, sign the CSR
-openssl x509 -req -in metric-server.csr -CA ${CA_LOCATION}/ca.crt -CAkey ${CA_LOCATION}/ca.key -CAcreateserial -out metric-server.crt -days 500
+openssl x509 -req -in ${1}.csr -CA ${CA_LOCATION}/ca.crt -CAkey ${CA_LOCATION}/ca.key -CAcreateserial -out ${1}.crt -days 500
 wait $!
 #
 # Create a CertificateSigningRequest and submit it to a Kubernetes Cluster via kubectl
 # request: is the base64 encoded value of the CSR file content. 
 # You can get the content using this command: cat metric-server.csr | base64 | tr -d "\n"
 #
-ENCODED_REQUEST=$(cat metric-server.csr | base64 | tr -d "\n")
+ENCODED_REQUEST=$(cat ${1}.csr | base64 | tr -d "\n")
 #
-kubectl apply -f - <<EOF
+kubectl apply -n kube-system -f - <<EOF
 apiVersion: certificates.k8s.io/v1
 kind: CertificateSigningRequest
 metadata:
-  name: metric-server
+  name: ${1}
 spec:
   groups:
   - system:nodes
@@ -48,13 +51,14 @@ spec:
 EOF
 wait $!
 #
-kubectl certificate approve metric-server
+kubectl certificate approve ${1}
 #
-kubectl get csr/metric-server -o yaml
+kubectl get csr/${1} -o yaml
 #
-kubectl config set-credentials metric-server \
---client-key=/home/dalexander/k8s/kubernetes/certs/metric-server.key \
---client-certificate=/home/dalexander/k8s/kubernetes/certs/metric-server.crt \
+kubectl config set-credentials ${1} \
+--client-key=/home/dalexander/k8s/kubernetes/certs/${1}.key \
+--client-certificate=/home/dalexander/k8s/kubernetes/certs/${1}.crt \
 --embed-certs=true
 wait $!
+##########################################################################
 set -e
