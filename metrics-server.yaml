@@ -191,15 +191,7 @@ spec:
         - --secure-port=4443
         - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
         - --kubelet-use-node-status-port
-        #- --kubelet-insecure-tls
-        - --authentication-kubeconfig=/tmp/certs/config
-        # - --kubelet-preferred-address-types=InternalDNS,InternalIP,ExternalDNS,ExternalIP,Hostname
-        - --requestheader-client-ca-file=/tmp/certs/ca.crt
-        - --bind-address=0.0.0.0
-        - --requestheader-allowed-names=aggregator
-        - --requestheader-extra-headers-prefix=X-Remote-Extra-
-        - --requestheader-group-headers=X-Remote-Group
-        - --requestheader-username-headers=X-Remote-User
+        - --kubelet-insecure-tls
         livenessProbe:
           failureThreshold: 3
           httpGet:
