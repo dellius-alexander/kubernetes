@@ -187,7 +187,6 @@ spec:
             memory: 2048Mi
         command:
         - /metrics-server
-        - --kubelet-insecure-tls
         - --kubelet-preferred-address-types=InternalDNS,InternalIP,ExternalDNS,ExternalIP,Hostname
         - --cert-dir=/tmp
         - --secure-port=4443
