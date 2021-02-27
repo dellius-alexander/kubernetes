@@ -187,12 +187,14 @@ spec:
             cpu: 500m
             memory: 2048Mi
         args:
-        #- --kubelet-insecure-tls
         - --cert-dir=/tmp/certs
-        - --authentication-kubeconfig=/tmp/certs/config
         - --secure-port=4443
+        - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
         - --kubelet-use-node-status-port
-        - --kubelet-preferred-address-types=InternalDNS,InternalIP,ExternalDNS,ExternalIP,Hostname
+        #- --kubelet-insecure-tls
+        # - --cert-dir=/tmp/certs
+        - --authentication-kubeconfig=/tmp/certs/config
+        # - --kubelet-preferred-address-types=InternalDNS,InternalIP,ExternalDNS,ExternalIP,Hostname
         - --requestheader-client-ca-file=/tmp/certs/metrics-server.crt
         - --bind-address=0.0.0.0
         - --requestheader-allowed-names=aggregator
