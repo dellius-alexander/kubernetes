@@ -157,7 +157,7 @@ wait $!
 ###############################################################################
 function __teardown__(){
 ###############################################################################
-get_env k8s.env
+get_env $(find -type f -name 'k8s.env')
 
     # Verify kubeadm and kubectl binary
 kube_binary
@@ -207,7 +207,7 @@ wait $!
 ###############################################################################
 function setup() {
 ###############################################################################
-get_env k8s.env
+get_env $(find -type f -name 'k8s.env')
 ###############################################################################
     # Install dependencies
 yum install -y git nano net-tools firewalld nfs-utils
@@ -219,7 +219,7 @@ iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
     # Pre-requisites: 
     # Update /etc/hosts file So that we can talk to each of the
     # nodes in the cluster. 
-cat hosts.conf > /etc/hosts
+cat $(find -type f -name 'hosts.conf') > /etc/hosts
 
     # Setup firewall rules
     # Posts to be defined on the worker nodes
@@ -260,7 +260,7 @@ if [ ! -d "/etc/docker/" ]; then
     mkdir /etc/docker
 fi
     # Set up the Docker daemon
-cat daemon.json > /etc/docker/daemon.json 
+cat $(find ~+ -type f -name 'daemon.json') > /etc/docker/daemon.json 
 
     # Create docker service
 mkdir -p /etc/systemd/system/docker.service.d
@@ -343,7 +343,7 @@ elif [ "${in}" == "setup" ]; then
     setup
     exit 0
 elif [ "${in}" == "test" ]; then
-    get_env k8s.env
+    get_env $(find -type f -name 'k8s.env')
     printf "\nTest was successful...\n";        
     exit 0
 elif [ "${in}" == "stop" ]; then
