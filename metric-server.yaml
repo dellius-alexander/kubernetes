@@ -151,7 +151,8 @@ spec:
     protocol: TCP
     targetPort: https
   selector:
-    k8s-app: metrics-server
+    app.kubernetes.io/component: metrics-server
+  type: ClusterIP
 
 ---
 
@@ -185,16 +186,16 @@ spec:
           limits:
             cpu: 500m
             memory: 2048Mi
-        command:
+        args:
         - /metrics-server
         - --kubelet-preferred-address-types=InternalDNS,InternalIP,ExternalDNS,ExternalIP,Hostname
         - --cert-dir=/tmp
         - --secure-port=4443
         - --requestheader-client-ca-file=/tmp/certs/metrics-server.crt
-        - --requestheader-allowed-names=aggregator
-        - --requestheader-extra-headers-prefix=X-Remote-Extra-
-        - --requestheader-group-headers=X-Remote-Group
-        - --requestheader-username-headers=X-Remote-User
+#        - --requestheader-allowed-names=aggregator
+#        - --requestheader-extra-headers-prefix=X-Remote-Extra-
+#        - --requestheader-group-headers=X-Remote-Group
+#        - --requestheader-username-headers=X-Remote-User
         livenessProbe:
           failureThreshold: 3
           httpGet:
