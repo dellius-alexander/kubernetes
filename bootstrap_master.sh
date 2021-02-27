@@ -136,15 +136,17 @@ wait $!
     # Source: https://docs.projectcalico.org/v3.14/manifests/calico.yaml
     # Modify the config map as needed:
 printf "\n\n${RED}--Deploying Calico Networking...${NC}\n\n"
-${KUBECTL} --kubeconfig=${__KUBECONFIG__}  create -f $(find ~+ -type f -name 'calico.yaml')
-#${KUBECTL} --kubeconfig=${__KUBECONFIG_FILEPATH__}  create -f https://docs.projectcalico.org/manifests/calico.yaml
+${KUBECTL} --kubeconfig=${__KUBECONFIG__} create -f $(find ~+ -type f -name 'calico.yaml')
+#${KUBECTL} --kubeconfig=${__KUBECONFIG__} create -f https://docs.projectcalico.org/manifests/calico.yaml
 wait $!
 
     # Metric Server
-printf "\n\n${RED}--Deploying Metric Server Daemonset...${NC}\n\n"
-${KUBECTL} --kubeconfig=${__KUBECONFIG__}  apply -f $(find ~+ -type f -name 'metrics-server.yaml')
-wait $!
-
+if [[ -f "metric-ca-config" ]]; then
+     printf "\n\n${RED}--Deploying Metric Server Daemonset...${NC}\n\n"
+     ${KUBECTL} --kubeconfig=${__KUBECONFIG__}  apply -f $(find ~+ -type f -name 'metrics-ca-config.yaml')
+     ${KUBECTL} --kubeconfig=${__KUBECONFIG__}  apply -f $(find ~+ -type f -name 'metrics-server.yaml')
+     wait $!
+fi
     # Cluster join command
 printf "\n\n${RED}--Printing join token...${NC}\n\n"
 ${KUBEADM} token create --print-join-command
