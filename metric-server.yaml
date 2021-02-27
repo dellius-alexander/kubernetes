@@ -188,6 +188,7 @@ spec:
         command:
         - /metrics-server
         - --kubelet-insecure-tls
+        - --kubelet-preferred-address-types=InternalDNS,InternalIP,ExternalDNS,ExternalIP,Hostname
         - --requestheader-client-ca-file=
         - --requestheader-allowed-names=aggregator
         - --requestheader-extra-headers-prefix=X-Remote-Extra-
@@ -225,6 +226,27 @@ spec:
       volumes:
       - emptyDir: {}
         name: tmp-dir
+      hostAliases:
+      - ip: "10.0.0.40"
+        hostnames:
+        - "k8s-master"
+        - "k8s-master.example.com"
+        - "k8s-master.dellius.org"
+      - ip: "10.0.0.41"
+        hostnames:
+        - "k8s-worker-1"
+        - "k8s-worker-1.example.com"
+        - "k8s-worker-1.dellius.org"
+      - ip: "10.0.0.42"
+        hostnames:
+        - "k8s-worker-2"
+        - "k8s-worker-2.example.com"
+        - "k8s-worker-2.dellius.org"
+      - ip: "10.0.0.43"
+        hostnames:
+        - "k8s-worker-2"
+        - "k8s-worker-2.example.com"
+        - "k8s-worker-2.dellius.org"
 
 ---
 
