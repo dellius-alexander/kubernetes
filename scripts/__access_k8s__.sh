@@ -13,7 +13,7 @@ if [[ $UID != 0 ]]; then
   exit 1
 -
 elif [[ ! -z ${1} -eq "[a-zA-Z0-9_]"]]; then
-  printf "\n${RED}Usage: ${0} <name of certificate>${NC}\n"
+  printf "\n\n${RED}Usage: ${0} <name of certificate>${NC}\n\n"
 fi
 ##########################################################################
 #
