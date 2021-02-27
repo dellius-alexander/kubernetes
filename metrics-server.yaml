@@ -239,8 +239,8 @@ spec:
         configMap:
           name: cert-ca-config
           items:
-          - key: metrics-server.crt
-            path: metrics-server.crt
+          - key: apiserver.crt
+            path: apiserver.crt
           - key: config
             path: config
       hostAliases:
