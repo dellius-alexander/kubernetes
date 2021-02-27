@@ -191,7 +191,7 @@ spec:
         - --kubelet-preferred-address-types=InternalDNS,InternalIP,ExternalDNS,ExternalIP,Hostname
         - --cert-dir=/tmp
         - --secure-port=4443
-        - --requestheader-client-ca-file="/tmp/certs/metric-server.crt"
+        - --requestheader-client-ca-file=/tmp/certs/metrics-server.crt
         - --requestheader-allowed-names=aggregator
         - --requestheader-extra-headers-prefix=X-Remote-Extra-
         - --requestheader-group-headers=X-Remote-Group
@@ -233,6 +233,9 @@ spec:
       - name: cert-ca-config
         configMap:
           name: cert-ca-config
+          items:
+          - key: metrics-server.crt
+            path: metrics-server.crt
       hostAliases:
       - ip: "10.0.0.40"
         hostnames:
