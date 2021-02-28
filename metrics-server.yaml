@@ -195,7 +195,7 @@ spec:
          - --kubelet-preferred-address-types=InternalDNS,InternalIP,ExternalDNS,ExternalIP,Hostname
         # - --cert-dir=/tmp
         # - --secure-port=4443
-        # - --requestheader-client-ca-file=/tmp/certs/metrics-server.crt
+        - --requestheader-client-ca-file=/tmp/certs/metrics-server.crt
 #        - --requestheader-allowed-names=aggregator
 #        - --requestheader-extra-headers-prefix=X-Remote-Extra-
 #        - --requestheader-group-headers=X-Remote-Group
