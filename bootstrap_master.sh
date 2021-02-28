@@ -142,7 +142,7 @@ wait $!
 
     # Metric Server
 printf "\n\n${RED}--Deploying Metric Server Daemonset...${NC}\n\n"
-${KUBECTL} --kubeconfig=${__KUBECONFIG__}  apply -f $(find ~+ -type f -name 'metric-server.yaml')
+${KUBECTL} --kubeconfig=${__KUBECONFIG__}  apply -f $(find ~+ -type f -name 'metrics-server.yaml')
 wait $!
 
     # Cluster join command

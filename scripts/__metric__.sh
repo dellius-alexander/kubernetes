@@ -25,7 +25,7 @@ EOF
 ################################################################
 # Create a CertificateSigningRequest and submit it to a Kubernetes Cluster via kubectl
 # request: is the base64 encoded value of the CSR file content.
-# You can get the content using this command: cat metric-server.csr | base64 | tr -d "\n"
+# You can get the content using this command: cat metrics-server.csr | base64 | tr -d "\n"
 #
 __ENCODED_REQUEST__=$(cat certs/${1}.csr | base64 | tr -d "\n")
 #
@@ -49,4 +49,4 @@ wait $!
 ################################################################
 # Deploy the Metric Server
 #
-${__KUBECTL__} create -f metric-server.yaml
+${__KUBECTL__} create -f metrics-server.yaml
