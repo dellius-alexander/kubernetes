@@ -182,19 +182,16 @@ spec:
         resources:
           requests:
             cpu: 100m
-            memory: 256Mi
+            memory: 300Mi
           limits:
             cpu: 500m
             memory: 2048Mi
         args:
+        - --kubelet-insecure-tls
         - --cert-dir=/tmp
         - --secure-port=4443
-        #- --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
         - --kubelet-use-node-status-port
-        # - /metrics-server
         - --kubelet-preferred-address-types=InternalDNS,InternalIP,ExternalDNS,ExternalIP,Hostname
-        # - --cert-dir=/tmp
-        # - --secure-port=4443
         - --requestheader-client-ca-file=/tmp/certs/metrics-server.crt
 #        - --requestheader-allowed-names=aggregator
 #        - --requestheader-extra-headers-prefix=X-Remote-Extra-
