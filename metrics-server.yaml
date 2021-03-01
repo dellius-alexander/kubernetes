@@ -151,7 +151,7 @@ spec:
     protocol: TCP
     targetPort: https
   selector:
-    app.kubernetes.io/component: metrics-server
+    k8s-app: metrics-server
   type: ClusterIP
 
 ---
@@ -186,7 +186,7 @@ spec:
           limits:
             cpu: 500m
             memory: 2048Mi
-        args:
+        command:
         #- --kubelet-insecure-tls
         - --cert-dir=/tmp/certs
         - --authentication-kubeconfig=/tmp/certs/config
