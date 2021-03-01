@@ -9,3 +9,4 @@ typha.yaml
 **/k8s.env
 calico-kubeconfig
 hosts.conf
+metrics-ca-config.yaml

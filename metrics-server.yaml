@@ -188,15 +188,17 @@ spec:
             memory: 2048Mi
         args:
         - --kubelet-insecure-tls
-        - --cert-dir=/tmp
+        - --cert-dir=/tmp/certs
+        - --authentication-kubeconfig=/tmp/certs/config
         - --secure-port=443
         - --kubelet-use-node-status-port
         - --kubelet-preferred-address-types=InternalDNS,InternalIP,ExternalDNS,ExternalIP,Hostname
         - --requestheader-client-ca-file=/tmp/certs/metrics-server.crt
-#        - --requestheader-allowed-names=aggregator
-#        - --requestheader-extra-headers-prefix=X-Remote-Extra-
-#        - --requestheader-group-headers=X-Remote-Group
-#        - --requestheader-username-headers=X-Remote-User
+        - --bind-address=0.0.0.0
+        - --requestheader-allowed-names=aggregator
+        - --requestheader-extra-headers-prefix=X-Remote-Extra-
+        - --requestheader-group-headers=X-Remote-Group
+        - --requestheader-username-headers=X-Remote-User
         livenessProbe:
           failureThreshold: 3
           httpGet:
@@ -205,7 +207,7 @@ spec:
             scheme: HTTPS
           periodSeconds: 10
         ports:
-        - containerPort: 443
+        - containerPort: 4443
           name: https
           protocol: TCP
         readinessProbe:
