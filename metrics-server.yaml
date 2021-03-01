@@ -240,6 +240,8 @@ spec:
           items:
           - key: metrics-server.crt
             path: metrics-server.crt
+          - key: config
+            path: config
       hostAliases:
       - ip: "10.0.0.40"
         hostnames:
