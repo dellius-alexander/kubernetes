@@ -186,8 +186,7 @@ spec:
           limits:
             cpu: 500m
             memory: 2048Mi
-        command:
-        - /metrics-server
+        args:
         #- --kubelet-insecure-tls
         - --cert-dir=/tmp/certs
         - --authentication-kubeconfig=/tmp/certs/config
