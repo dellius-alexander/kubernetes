@@ -1,3 +1,4 @@
+# https://github.com/kubernetes-sigs/metrics-server/releases
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -5,7 +6,10 @@ metadata:
     k8s-app: metrics-server
   name: metrics-server
   namespace: kube-system
+
+
 ---
+
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -25,7 +29,9 @@ rules:
   - get
   - list
   - watch
+
 ---
+
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -45,7 +51,40 @@ rules:
   - get
   - list
   - watch
+
 ---
+
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: ClusterRole
+# metadata:
+#   name: metrics-server
+# rules:
+# - apiGroups:
+#   - certificates.k8s.io
+#   resources:
+#   - certificatesigningrequests
+#   verbs:
+#   - get
+#   - list
+#   - watch
+# - apiGroups:
+#   - certificates.k8s.io
+#   resources:
+#   - certificatesigningrequests/approval
+#   verbs:
+#   - update
+# - apiGroups:
+#   - certificates.k8s.io
+#   resources:
+#   - signers
+#   resourceNames:
+#   # example.com/* can be used to authorize for all signers in the 'example.com' domain
+#   - example.com/*
+#   verbs:
+#   - approve
+
+# ---
+
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
@@ -61,7 +100,9 @@ subjects:
 - kind: ServiceAccount
   name: metrics-server
   namespace: kube-system
+
 ---
+
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -76,7 +117,9 @@ subjects:
 - kind: ServiceAccount
   name: metrics-server
   namespace: kube-system
+
 ---
+
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -91,7 +134,9 @@ subjects:
 - kind: ServiceAccount
   name: metrics-server
   namespace: kube-system
+
 ---
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -107,7 +152,10 @@ spec:
     targetPort: https
   selector:
     k8s-app: metrics-server
+  type: ClusterIP
+
 ---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -130,14 +178,21 @@ spec:
       serviceAccountName: metrics-server
       containers:
       - name: metrics-server
-        image: k8s.gcr.io/metrics-server/metrics-server:v0.4.2
+        image: k8s.gcr.io/metrics-server/metrics-server:v0.4.1
         imagePullPolicy: IfNotPresent
         args:
-          - --kubelet-insecure-tls    # Needed for single node cluster
-          - --cert-dir=/tmp
-          - --secure-port=4443
-          - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
-          - --kubelet-use-node-status-port
+        - --cert-dir=/tmp/certs
+        - --secure-port=4443
+        - --kubelet-use-node-status-port
+        #- --kubelet-insecure-tls
+        - --authentication-kubeconfig=/tmp/certs/config
+        - --kubelet-preferred-address-types=InternalDNS,InternalIP,ExternalDNS,ExternalIP,Hostname
+        - --requestheader-client-ca-file=/tmp/certs/ca.crt
+        - --bind-address=0.0.0.0
+        - --requestheader-allowed-names=aggregator
+        - --requestheader-extra-headers-prefix=X-Remote-Extra-
+        - --requestheader-group-headers=X-Remote-Group
+        - --requestheader-username-headers=X-Remote-User
         livenessProbe:
           failureThreshold: 3
           httpGet:
@@ -168,16 +223,52 @@ spec:
           runAsNonRoot: true
           runAsUser: 1000
         volumeMounts:
-        - mountPath: /tmp
-          name: tmp-dir
+        - name: tmp-dir
+          mountPath: /tmp
+        - name: cert-ca-config
+          mountPath: /tmp/certs
       nodeSelector:
         kubernetes.io/os: linux
       priorityClassName: system-cluster-critical
       volumes:
-      - emptyDir: {}
-        name: tmp-dir
-        
+      - name: tmp-dir
+        emptyDir: {}
+      - name: cert-ca-config
+        configMap:
+          name: cert-ca-config
+          items:
+          - key: apiserver.crt
+            path: apiserver.crt
+          - key: apiserver.key
+            path: apiserver.key
+          - key: config
+            path: config
+          - key: ca.crt
+            path: ca.crt
+      hostAliases:
+      - ip: "10.0.0.40"
+        hostnames:
+        - "k8s-master"
+        - "k8s-master.example.com"
+        - "k8s-master.dellius.org"
+      - ip: "10.0.0.41"
+        hostnames:
+        - "k8s-worker-1"
+        - "k8s-worker-1.example.com"
+        - "k8s-worker-1.dellius.org"
+      - ip: "10.0.0.42"
+        hostnames:
+        - "k8s-worker-2"
+        - "k8s-worker-2.example.com"
+        - "k8s-worker-2.dellius.org"
+      - ip: "10.0.0.43"
+        hostnames:
+        - "k8s-worker-3"
+        - "k8s-worker-3.example.com"
+        - "k8s-worker-3.dellius.org"
+
 ---
+
 apiVersion: apiregistration.k8s.io/v1
 kind: APIService
 metadata:
