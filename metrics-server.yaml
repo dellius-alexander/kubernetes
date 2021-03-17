@@ -116,6 +116,10 @@ metadata:
   name: metrics-server
   namespace: kube-system
 spec:
+  tolerations:  # added for master
+  - key: node-role.kubernetes.io/master
+    effect: NoSchedule
+  terminationGracePeriodSeconds: 30
   selector:
     matchLabels:
       k8s-app: metrics-server
