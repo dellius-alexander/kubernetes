@@ -128,7 +128,7 @@ spec:
       maxUnavailable: 0
   template:
     metadata:
-      labels:
+      labels:cc
         k8s-app: metrics-server
     spec:
       serviceAccountName: metrics-server

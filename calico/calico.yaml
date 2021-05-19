@@ -1,5 +1,5 @@
 # https://docs.projectcalico.org/manifests/calico.yaml
-
+# https://docs.projectcalico.org/maintenance/ebpf/enabling-bpf ******
 # Source: calico/templates/calico-config.yaml
 # This ConfigMap is used to configure a self-hosted Calico installation.
 apiVersion: v1
@@ -30,8 +30,8 @@ data:
           "log_level": "info",
           "log_file_path": "/var/log/calico/cni/cni.log",
           "datastore_type": "kubernetes",
-          "nodename": "__KUBERNETES_NODE_NAME__",
-          "mtu": __CNI_MTU__,
+          "nodename": "${__KUBERNETES_NODE_NAME__}",
+          "mtu": ${__CNI_MTU__},
           "ipam": {
               "type": "calico-ipam"
           },
@@ -39,7 +39,7 @@ data:
               "type": "k8s"
           },
           "kubernetes": {
-              "kubeconfig": "__KUBECONFIG_FILEPATH__"
+              "kubeconfig": "${__KUBECONFIG_FILEPATH__}"
           }
         },
         {

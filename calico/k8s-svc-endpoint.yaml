@@ -1,0 +1,8 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: kubernetes-services-endpoint
+  namespace: kube-system
+data:
+  KUBERNETES_SERVICE_HOST: ${__KUBERNETES_SERVICE_HOST__}   # listed in k8s.env file
+  KUBERNETES_SERVICE_PORT: ${__KUBERNETES_SERVICE_PORT__}   # listed in k8s.env file
