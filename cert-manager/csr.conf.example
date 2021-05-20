@@ -1,0 +1,44 @@
+# See: https://kubernetes.io/docs/tasks/administer-cluster/certificates/#openssl
+##########################################################################
+# Create a config file (e.g. csr.conf) for generating a Certificate Signing Request (CSR).
+# # MASTER_IP: is the Common Name (CN) for the CA's new root certificate.
+# The Common Name (AKA CN) represents the server name protected by the SSL
+# certificate. The certificate is valid only if the request hostname matches 
+# the certificate common name. the common name consists of a single host name 
+# (e.g. example.com, www.example.com), or a wildcard name in case of a wildcard
+# certificate (e.g. *.example.com).
+# # MASTER_CLUSTER_IP: is usually the first IP from the service CIDR that is specified as the --service-cluster-ip-range argument for both the API server and the controller manager component.
+##########################################################################
+[ req ]
+default_bits = 2048
+prompt = no
+default_md = sha256
+req_extensions = req_ext
+distinguished_name = dn
+
+[ dn ]
+C = # <country>
+ST = # <state>
+L = # <city>
+O = # <organization>
+OU =  # <organization unit>
+CN =  # <MASTER_IP>
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = kubernetes
+DNS.2 = kubernetes.default
+DNS.3 = kubernetes.default.svc
+DNS.4 = kubernetes.default.svc.cluster
+DNS.5 = kubernetes.default.svc.cluster.local.
+IP.1 = # <MASTER_IP>
+IP.2 = # <MASTER_CLUSTER_IP>
+
+[ v3_ext ]
+authorityKeyIdentifier=keyid,issuer:always
+basicConstraints=CA:FALSE
+keyUsage=keyEncipherment,dataEncipherment
+extendedKeyUsage=serverAuth,clientAuth
+subjectAltName=@alt_names

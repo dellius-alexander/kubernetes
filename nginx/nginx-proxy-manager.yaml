@@ -1,0 +1,80 @@
+
+
+---
+version: "3"
+services:
+  ########################################################################
+  # 
+  ########################################################################
+  app:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: nginx-proxy-manager
+    restart: always
+    ports:
+      # Public HTTP Port:
+      - '80:80'
+      # Public HTTPS Port:
+      - '443:443'
+      # Admin Web Port:
+      - '81:81'
+    environment:
+      # These are the settings to access your db
+      DB_MYSQL_HOST: "db"
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: "npm"
+      DB_MYSQL_PASSWORD: "npm"
+      DB_MYSQL_NAME: "npm"
+      # If you would rather use Sqlite uncomment this
+      # and remove all DB_MYSQL_* lines above
+      # DB_SQLITE_FILE: "/data/database.sqlite"
+      # Uncomment this if IPv6 is not enabled on your host
+      ####################################################################
+      # Disable IPV6 on container
+      DISABLE_IPV6: 'true'
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+      - ./proxy_host:/data/nginx/proxy_host
+      - ./certs:/data/nginx/certs
+      #- ./nginx:/etc/nginx
+      #- ./default_host:/data/nginx/default_host
+      #- ./include:/etc/nginx/conf.d/include
+    depends_on:
+      - db
+    links:
+      - db
+    networks:
+      nginx-network:
+        ipv4_address: 172.22.0.3
+  ########################################################################
+  # When using a mariadb database, the NPM configuration file should still 
+  # use the mysql engine!
+  ########################################################################
+  db:
+    image: 'jc21/mariadb-aria:10.4'
+    container_name: mariadb-aria
+    restart: always
+    ports:
+      # Change db port assignment to 33306
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: 'npm'
+      MYSQL_DATABASE: 'npm'
+      MYSQL_USER: 'npm'
+      MYSQL_PASSWORD: 'npm'
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    networks:
+      nginx-network:
+        ipv4_address: 172.22.0.2
+################################# volumes ################################
+# since we are using direct access to host directories, we do not need to
+# declare any virtual volume mounts
+################################ NETWORK #################################
+networks:
+  nginx-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.22.0.0/28

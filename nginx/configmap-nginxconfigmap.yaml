@@ -1,4 +1,21 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2021-04-10T00:10:19Z"
+  managedFields:
+  - apiVersion: v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:data:
+        .: {}
+        f:default.conf: {}
+    manager: kubectl-create
+    operation: Update
+    time: "2021-04-10T00:10:19Z"
+  name: nginxconfigmap
+  namespace: default
+  resourceVersion: "2512834"
+  uid: 8eff94e7-6efe-439c-9aee-339cff5d2647
 data:
   default.conf: |
     server {
@@ -18,20 +35,4 @@ data:
                     try_files  / =404;
             }
     }
-kind: ConfigMap
-metadata:
-  creationTimestamp: "2021-04-10T00:10:19Z"
-  managedFields:
-  - apiVersion: v1
-    fieldsType: FieldsV1
-    fieldsV1:
-      f:data:
-        .: {}
-        f:default.conf: {}
-    manager: kubectl-create
-    operation: Update
-    time: "2021-04-10T00:10:19Z"
-  name: nginxconfigmap
-  namespace: default
-  resourceVersion: "2512834"
-  uid: 8eff94e7-6efe-439c-9aee-339cff5d2647
+
