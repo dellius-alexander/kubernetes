@@ -10,3 +10,5 @@ typha.yaml
 calico-kubeconfig
 hosts.conf
 metrics-ca-config.yaml
+*.env
+*.conf
